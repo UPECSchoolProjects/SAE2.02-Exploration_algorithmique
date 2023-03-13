@@ -1,5 +1,7 @@
 package Conversion;
 
+import java.io.File;
+
 public interface IConverter {
-    public void convert();
+    public File convert();
 }
