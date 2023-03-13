@@ -16,14 +16,10 @@ public class App {
         // File test = new File("test.txt");
         // System.out.println(test);
 
-        File test = new File("test.txt");
-        BufferedReader br = new BufferedReader(new FileReader("test.txt"));
-        String st;
-        while ((st = br.readLine()) != null)
-            System.out.println(st);
-        System.out.println("Done");
+        analyse text=new analyse();
+        text.phrase("test.txt");
 
-        
+
 
         
     }
