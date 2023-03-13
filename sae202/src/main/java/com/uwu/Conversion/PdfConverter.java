@@ -4,7 +4,7 @@ import java.io.File;
 
 public class PdfConverter implements IConverter {
 
-    public PdfConverter(File f) {
+    public PdfConverter(String f) {
         // TODO Auto-generated constructor stub
     }
 

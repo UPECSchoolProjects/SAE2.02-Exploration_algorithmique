@@ -4,8 +4,8 @@ import java.io.File;
 
 public class ConversionFactory {
 
-    public static IConverter getConverter(File f) {
-        switch(f.getName().substring(f.getName().lastIndexOf('.') + 1)) {
+    public static IConverter getConverter(String f) {
+        switch(f.substring(f.lastIndexOf('.') + 1)) {
             case "pdf":
                 return new PdfConverter(f);
             case "html":

@@ -8,7 +8,7 @@ public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Hello, World!");
 
-        IConverter cf = ConversionFactory.getConverter(new File("test.pdf"));
+        IConverter cf = ConversionFactory.getConverter("test.pdf");
 
         cf.convert();
     }
