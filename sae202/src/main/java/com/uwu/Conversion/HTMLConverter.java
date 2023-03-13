@@ -11,9 +11,13 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 public class HTMLConverter implements IConverter {
-    String fileName;
+    public String fileName;
+    public static Pattern bodyRegex = Pattern.compile("<body");
+    public static Pattern baliseRegex = Pattern.compile("<[^>]*>");
+    public static Pattern htmlCommentRegex = Pattern.compile("<!--[^-]+-->");
 
     public HTMLConverter(String f) {
         // TODO Auto-generated constructor stub
@@ -26,27 +30,37 @@ public class HTMLConverter implements IConverter {
         Boolean isBody = false;
         try (BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
             StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
 
-            while (line != null) {
-                if (line.contains("<body>"))
-                    isBody = true;
+            int linenb = 0;
+            String line;
+            do {
+                line = br.readLine();
+                System.out.println(linenb);
+                linenb++;
 
-                if (!isBody)
-                    continue;
-
+                if (!isBody) {
+                    if (bodyRegex.matcher(line).find()) {
+                        isBody = true;
+                    } else {
+                        continue;
+                    }
+                }
+                if (line == null)
+                    break;
                 sb.append(line);
                 sb.append(System.lineSeparator());
-                line = br.readLine();
-            }
+            } while (line != null);
             String everything = sb.toString();
+            System.out.println(everything);
+            everything = baliseRegex.matcher(everything).replaceAll("");
+            everything = htmlCommentRegex.matcher(everything).replaceAll("");
 
             BufferedWriter writer =
-                    new BufferedWriter(new FileWriter(this.fileName.split(".")[0] + ".txt"));
+                    new BufferedWriter(new FileWriter(this.fileName.split("\\.")[0] + ".txt"));
             writer.write(everything);
 
             writer.close();
-            return new File(this.fileName.split(".")[0] + ".txt");
+            return new File(this.fileName.split("\\.")[0] + ".txt");
 
         } catch (IOException e) {
             e.printStackTrace();
