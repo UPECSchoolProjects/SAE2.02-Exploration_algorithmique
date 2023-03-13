@@ -72,4 +72,9 @@
       </plugins>
     </pluginManagement>
   </build>
+  <dependency>
+    <groupId>com.groupdocs</groupId>
+    <artifactId>groupdocs-conversion</artifactId>
+    <version>23.2</version>
+  </dependency>
 </project>
