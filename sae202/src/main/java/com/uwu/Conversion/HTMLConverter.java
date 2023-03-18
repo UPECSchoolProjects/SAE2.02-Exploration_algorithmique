@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
+import com.uwu.Conversion.HTMLParser.HTMLElement;
 
 public class HTMLConverter implements IConverter {
     public String fileName;
@@ -51,9 +52,9 @@ public class HTMLConverter implements IConverter {
                 sb.append(System.lineSeparator());
             } while (line != null);
             String everything = sb.toString();
+            
             System.out.println(everything);
-            everything = baliseRegex.matcher(everything).replaceAll("");
-            everything = htmlCommentRegex.matcher(everything).replaceAll("");
+            HTMLElement bodyElement = new HTMLElement(everything.replaceAll("<body>", "").replaceAll("</body>", "").replace("</html>", ""));
 
             BufferedWriter writer =
                     new BufferedWriter(new FileWriter(this.fileName.split("\\.")[0] + ".txt"));
