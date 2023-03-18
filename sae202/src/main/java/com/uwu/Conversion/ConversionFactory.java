@@ -1,7 +1,5 @@
 package com.uwu.Conversion;
 
-import java.io.File;
-
 public class ConversionFactory {
 
     public static IConverter getConverter(String f, String path) {

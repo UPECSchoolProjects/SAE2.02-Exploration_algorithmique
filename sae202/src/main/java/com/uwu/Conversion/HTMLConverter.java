@@ -1,16 +1,11 @@
 package com.uwu.Conversion;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.ArrayList;
@@ -137,7 +132,8 @@ public class HTMLConverter implements IConverter {
             }
         }
 
-        return sb.toString().replaceAll("&#160;;", "").replaceAll("&#160;", "").replaceAll("\\s+", " ").replaceAll("\t", "");
+        return sb.toString().replaceAll("&#160;;", "").replaceAll("&#160;", "").replaceAll("\\s+", " ").replaceAll("\t",
+                "");
     }
 
     public ArrayList<HTMLElement> Parser() {
@@ -161,7 +157,9 @@ public class HTMLConverter implements IConverter {
          * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer
          * un défi personnel et de faire un parser HTML basique en Java, c'était assez
          * amusant à faire
+         * (Maxime LOTTO)
          */
+
         char[] content = readFile().toCharArray();
         int error = 0;
 
