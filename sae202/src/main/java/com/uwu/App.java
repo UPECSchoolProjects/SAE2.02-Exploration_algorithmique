@@ -1,23 +1,14 @@
 package com.uwu;
 
 import com.uwu.Conversion.ConversionFactory;
+import com.uwu.Conversion.HTMLConverter;
 import com.uwu.Conversion.IConverter;
 
 public class App {
     public static void main(String[] args) throws Exception {
 
-        // IConverter cf = ConversionFactory.getConverter("test.pdf");
+        HTMLConverter html = new HTMLConverter("htmltest.html");
+        html.Parser();
 
-        // cf.convert();
-
-        // File test = new File("test.txt");
-        // System.out.println(test);
-
-        analyse text=new analyse();
-        text.phrase("test.txt");
-
-
-
-        
     }
 }
