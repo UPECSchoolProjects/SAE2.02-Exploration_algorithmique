@@ -7,8 +7,7 @@ import com.uwu.Conversion.IConverter;
 public class App {
     public static void main(String[] args) throws Exception {
 
-        HTMLConverter html = new HTMLConverter("htmltest3.html");
-        html.Parser();
-
+         HTMLConverter html = new HTMLConverter("HTMLTEST/htmltest.html", "HTMLParsed/");
+         html.convert();
     }
 }

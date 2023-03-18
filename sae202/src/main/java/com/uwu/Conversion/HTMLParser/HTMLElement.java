@@ -67,19 +67,27 @@ public class HTMLElement {
         return this.innerHTML;
     }
 
+    public String getInnerText() {
+        return this.outerHTML.replaceAll("<[^>]*>", "");
+    }
+
+    public String getOuterHTML() {
+        return this.outerHTML;
+    }
+
 
     public void parseAttributes() {
         String withoutTag =
                 this.outerHTML.substring(this.tag.length() + 1, this.outerHTML.indexOf('>')).trim();
-        System.out.println("Without tag: " + withoutTag);
+        //System.out.println("Without tag: " + withoutTag);
         Matcher attributesMatcher = AttributesRegex.matcher(withoutTag);
         while (attributesMatcher.find()) {
             String attribute = attributesMatcher.group(1);
-            System.out.println("Attribute Matcher: " + attribute);
+            //System.out.println("Attribute Matcher: " + attribute);
             String[] attributeSplit = attribute.split("=");
             this.attributes.put(attributeSplit[0], attributeSplit[1].replaceAll("\"", ""));
 
-            System.out.println("Attribute: " + attributeSplit[1]);
+            //System.out.println("Attribute: " + attributeSplit[1]);
         }
     }
 

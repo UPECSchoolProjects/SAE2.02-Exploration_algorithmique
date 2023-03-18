@@ -16,9 +16,11 @@ import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
+
+import com.uwu.Conversion.HTMLParser.DOMSelecter;
 import com.uwu.Conversion.HTMLParser.HTMLElement;
 
-public class HTMLConverter {
+public class HTMLConverter implements IConverter {
     public static Pattern bodyRegex = Pattern.compile("<body");
     public static Pattern baliseRegex = Pattern
             .compile("<(/?\\w+)((\\s+\\w+(\\s*=\\s*(\".*?\"|'.*?'|[\\^'\">\\s]+))?)+\\s*|\\s*)/?>");
@@ -43,43 +45,71 @@ public class HTMLConverter {
             "td", "template", "textarea", "tfoot", "th", "thead", "time", "title",
             "tr", "u", "ul", "var", "video", "center"));
 
-    public static Pattern TagNameRegex = Pattern.compile("</?([^> ]+)", Pattern.MULTILINE);
+    public static Pattern TagNameRegex = Pattern.compile("</?([^> /]+)", Pattern.MULTILINE);
 
     public String fileName;
+    public String path;
 
-    public HTMLConverter(String f) {
-        this.fileName = f;
+    public HTMLConverter(String fileName, String path) {
+        this.fileName = fileName;
+        this.path = path;
     }
 
     @Override
     public File convert() {
         // read file
-        String content = readFile();
+        String content = getText();
         if (content == null)
             return null;
-        BufferedWriter writer = new BufferedWriter(new FileWriter(this.fileName.split("\\.")[0] + ".txt"));
-        writer.write(content);
+        try {
+            String filenameWithoutPath = this.fileName.contains("/")
+                    ? this.fileName.substring(this.fileName.lastIndexOf("/") + 1, this.fileName.lastIndexOf(".html"))
+                    : this.fileName.substring(0, this.fileName.lastIndexOf(".html"));
+            String pathURL = this.path + filenameWithoutPath + "-parsed.txt";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
+            writer.write(content);
 
-        writer.close();
-        return new File(this.fileName.split("\\.")[0] + ".txt");
+            writer.close();
+
+            return new File(pathURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public String readFile() {
+        /*
+         * Cette fonction lit le fichier HTML ligne par ligne et le convertit en String
+         */
+        // Ouvre le fichier HTML en utilisant un BufferedReader pour lire ligne par
+        // ligne
         try (BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
             StringBuilder sb = new StringBuilder();
 
+            // ligne nb est utilisé pour le debug, pour mesurer l'avancement
             int linenb = 0;
             String line;
+
+            // Lit le fichier HTML ligne par ligne
             do {
-                line = br.readLine();
-                System.out.println(linenb);
+                line = br.readLine(); // on recupere la prochaine ligne
+                System.out.println(linenb); // debug
                 linenb++;
 
-                if (line == null)
+                if (line == null) // si la ligne est null, on a atteint la fin du fichier
                     break;
-                sb.append(line);
+
+                sb.append(line); // on ajoute la ligne au StringBuilder
+                // à la base je voulais ignorer les retours à la ligne.
+                // cepandant, il semble que les retours à la ligne soient importants pour la
+                // suite du traitement du texte (les mots sont séparés par des retours à la
+                // ligne)
+                sb.append(" ");
+                // on continue tant que la ligne n'est pas null (fin du fichier)
             } while (line != null);
             String everything = sb.toString();
+            // on supprime les commentaires HTML, ils ne sont pas utiles pour le traitement
             everything = htmlCommentRegex.matcher(everything).replaceAll("");
             return everything;
         } catch (IOException e) {
@@ -88,137 +118,69 @@ public class HTMLConverter {
         }
     }
 
-    // public void Parser() {
-    // String content = readFile();
-    // int error = 0;
+    public String getText() {
+        /*
+         * Cette fonction recupere toutes les balise de l'HTML, et en extrait le texte
+         * ELle est spécifique à WikiSource
+         */
+        ArrayList<HTMLElement> elements = Parser();
+        DOMSelecter selecter = new DOMSelecter(elements);
+        HTMLElement el = selecter.selectFirst("class", "text");
+        if (el == null)
+            return "";
+        StringBuilder sb = new StringBuilder();
+        System.out.println("---------------");
+        for (HTMLElement child : el.children) {
+            System.out.println(child.tag);
+            if (child.tag.equals("p")) {
+                sb.append(child.getInnerText());
+            }
+        }
 
-    // Matcher contentMatcher = baliseRegex.matcher(content);
-    // Stack<String> balises = new Stack<String>();
+        return sb.toString().replaceAll("&#160;;", "").replaceAll("&#160;", "").replaceAll("\\s+", " ").replaceAll("\t", "");
+    }
 
-    // while (contentMatcher.find()) {
-    // String balise = contentMatcher.group(1);
-    // String classes = contentMatcher.group(2);
-    // String baliseName = balise.replace("/", "");
-    // boolean closing = balise.startsWith("/");
-
-    // System.out.println(balise + " " + classes + "\n");
-
-    // if(balisesAutofermantes.contains(baliseName)) {
-    // continue;
-    // }
-
-    // if(balisesNonAutofermantes.contains(baliseName)) {
-    // if(closing) {
-    // if(balises.peek().equals(baliseName)) {
-    // balises.pop();
-    // } else {
-    // error++;
-    // System.out.println("Balise non fermée : " + balise);
-    // }
-    // } else {
-    // balises.push(baliseName);
-    // }
-    // } else {
-    // System.out.println("Balise non reconnue : " + balise);
-    // }
-    // }
-
-    // System.out.println("Nombre d'erreurs : " + error);
-    // }
-
-    // public void Parser() {
-    //     char[] content = readFile().toCharArray();
-    //     int error = 0;
-
-    //     Stack<HTMLElement> balises = new Stack<HTMLElement>();
-    //     ArrayList<HTMLElement> elements = new ArrayList<HTMLElement>();
-    //     int i = 0;
-    //     while (i < content.length) {
-    //         char c = content[i];
-    //         if (c == '<') {
-    //             String balise = "";
-    //             while (content[i] != '>') {
-    //                 balise += content[i];
-    //                 i++;
-    //             }
-    //             balise += content[i];
-    //             balise = balise.substring(1, balise.length() - 1).trim();
-    //             String baliseName;
-    //             Matcher tagNameMatcher = TagNameRegex.matcher(balise);
-    //             if (tagNameMatcher.find()) {
-    //                 baliseName = tagNameMatcher.group(1);
-    //             } else {
-    //                 baliseName = "";
-    //             }
-    //             System.out.println("Balise Name : " + baliseName);
-    //             boolean closing = balise.startsWith("/");
-
-    //             System.out.println(balise + "\n");
-
-    //             if (balisesAutofermantes.contains(baliseName)) {
-    //                 continue;
-    //             }
-
-    //             if (balisesNonAutofermantes.contains(baliseName)) {
-    //                 if (closing) {
-    //                     if (balises.peek().tag.equals(baliseName)) {
-    //                         elements.add(balises.pop());
-    //                     } else {
-    //                         error++;
-    //                         System.out.println("Balise non fermée : " + balise);
-    //                     }
-    //                     for (HTMLElement element : balises) {
-    //                         element.innerHTML += "<" + balise + ">";
-    //                     }
-    //                 } else {
-    //                     for (HTMLElement element : balises) {
-    //                         element.innerHTML += "<" + balise + ">";
-    //                     }
-    //                     HTMLElement element = new HTMLElement(baliseName, false, "<" + balise + ">");
-    //                     balises.push(element);
-    //                 }
-    //             } else {
-    //                 System.out.println("Balise non reconnue : " + balise);
-    //             }
-    //         } else {
-    //             System.out.println(c);
-    //             for (HTMLElement element : balises) {
-    //                 element.innerHTML += c;
-    //             }
-    //         }
-    //         i++;
-    //     }
-    //     System.out.println("Nombre d'erreurs : " + error);
-    //     StringBuilder sb = new StringBuilder();
-    //     for (HTMLElement element : elements) {
-    //         sb.append(element.toString());
-    //         sb.append("\n");
-    //     }
-    //     try {
-    //         BufferedWriter writer = new BufferedWriter(new FileWriter(this.fileName.split("\\.")[0] + "-parsed.txt"));
-    //         writer.write(sb.toString());
-
-    //         writer.close();
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-
-    // }
-
-    public void Parser() {
+    public ArrayList<HTMLElement> Parser() {
+        /*
+         * Cette fonction permet de parser le fichier HTML et de retourner une liste
+         * d'HTMLElement (classe définie dans le package com.uwu.Conversion.HTMLParser)
+         * ELle utilise un stack pour gérer les balises ouvertes et fermées
+         * Elle lis les caractères un par un et les ajoute dans le outerHTML de toutes
+         * les balises qui n'ont pas encore été fermée
+         * Une fois qu'une balise est fermée, celà veut dire que le contenu de la balise
+         * est terminé, on peut donc l'ajouter à la liste de balise et la sortir du
+         * stack
+         * De plus on ajoute la balise fermante à la liste des enfants de la balise
+         * juste au dessus dans la hierachie
+         * 
+         * Cette fonction est la forme la plus simple que pourrait prendre un parser
+         * HTML, il y a beaucoup de choses à améliorer
+         * Néanmoins, il est plus que suffisant pour notre projet. (il ne garde pas dans
+         * tout les cas la mise en forme du texte)
+         * 
+         * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer
+         * un défi personnel et de faire un parser HTML basique en Java, c'était assez
+         * amusant à faire
+         */
         char[] content = readFile().toCharArray();
         int error = 0;
 
+        // le stack qui va contenir les balises ouvertes et leur ordre d'ouverture
         Stack<HTMLElement> balises = new Stack<HTMLElement>();
+        // la liste qui va contenir toutes les balises fermée une fois que l'on a tout
+        // leur contenu
         ArrayList<HTMLElement> elements = new ArrayList<HTMLElement>();
         int i = 0;
         while (i < content.length) {
             char c = content[i];
+            // on ajoute le caractère au outerHTML de toutes les balises ouvertes
             for (HTMLElement element : balises) {
                 element.addOuterHTML(String.valueOf(c));
             }
+            // si on tombe sur une balise on la traite
             if (c == '<') {
                 String balise = "";
+                // on récupère tout le contenu de la balise jusqu'au ">"
                 while (content[i] != '>') {
                     balise += content[i];
                     i++;
@@ -226,20 +188,40 @@ public class HTMLConverter {
 
                 balise += content[i];
 
+                // on ajoute la balise au outerHTML de toutes les balises ouvertes
+                // étant donné que le premier while n'est plus pris en compte
                 for (HTMLElement element : balises) {
                     element.addOuterHTML(balise.substring(1, balise.length()));
                 }
 
+                // on récupère le nom de la balise sans le /, le < ou le >
                 String tagName = getTagName(balise);
-                boolean closing = balise.startsWith("</");
+                boolean closing = balise.startsWith("</"); // si la balise commence par </ alors c'est une balise
+                                                           // fermante
 
+                // si la balise est autofermante on ne s'en occupe pas, elle ne sert à rien pour
+                // la SAE, on ne veut que le texte
+                // donc on l'ignore est on reprend la boucle
+                // bien-sûr dans le cas d'un vrai parser on devrait la traiter
                 if (balisesAutofermantes.contains(tagName)) {
+                    i++;
                     continue;
                 }
 
+                System.out.println("Balise : " + tagName);
+
+                // si la balise est une balise non autofermante, on la traite
                 if (balisesNonAutofermantes.contains(tagName)) {
+                    // si jamais la balise est fermante, on regarde si la deniere balise ouverte est
+                    // la même que celle qu'on vient de fermer
                     if (closing) {
+                        // balise.peek() permet de récupérer la dernière balise ouverte sans la sortir
+                        // du stack
                         if (balises.peek().tag.equals(tagName)) {
+                            // Si la balise est la même que la dernière balise ouverte, on la sort du stack
+                            // et on l'ajoute à la liste des balises fermées
+                            // on ajoute aussi la balise fermante à la liste des enfants de la balise juste
+                            // au dessus dans la hierachie
                             HTMLElement element = balises.pop();
                             elements.add(element);
 
@@ -247,31 +229,30 @@ public class HTMLConverter {
                                 balises.peek().addChild(element);
                             }
                         } else {
+                            // si la balise fermante n'est pas la même que la dernière balise ouverte, cela
+                            // veut dire qu'il y a une erreur dans le code HTML
+                            // on affiche un message d'erreur et on incrémente le nombre d'erreur
+                            // il y'a de forte chance que le reste du parsing se déroule mal mais ça peut
+                            // fonctionner quand même
                             error++;
                             System.out.println("Balise non fermée : " + balise);
                         }
                     } else {
+                        // Si c'est une balise ouvrante, on l'ajoute au stack
                         HTMLElement element = new HTMLElement(tagName, false, balise);
                         balises.push(element);
                     }
+                } else {
+                    // cela veut dire que c'est une balise html qui n'existe pas dans la
+                    // spécification XHTML
+                    System.err.println("Balise non reconnue : " + balise);
                 }
             }
             i++;
         }
         System.out.println("Nombre d'erreurs : " + error);
-        StringBuilder sb = new StringBuilder();
-        for (HTMLElement element : elements) {
-            sb.append(element.toString());
-            sb.append("\n");
-        }
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(this.fileName.split("\\.")[0] + "-parsed.txt"));
-            writer.write(sb.toString());
 
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return elements;
     }
 
     public String getTagName(String balise) {
