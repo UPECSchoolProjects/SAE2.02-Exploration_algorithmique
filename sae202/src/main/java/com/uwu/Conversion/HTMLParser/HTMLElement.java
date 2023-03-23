@@ -20,7 +20,7 @@ public class HTMLElement {
     public HTMLElement(String tag, boolean isSelfClosing, String balise) {
         this.tag = tag;
         this.isSelfClosing = isSelfClosing;
-        this.innerHTML = "";
+        this.innerHTML = null;
         this.attributes = new HashMap<String, String>();
         this.outerHTML = balise;
         this.children = new ArrayList<HTMLElement>();
@@ -34,7 +34,7 @@ public class HTMLElement {
 
     public void addOuterHTML (String text) {
         this.outerHTML += text;
-        calculateInnerHTML();
+        this.innerHTML = null;
     }
 
     public void addChild(HTMLElement child) {
@@ -64,6 +64,9 @@ public class HTMLElement {
     }
 
     public String getInnerHTML() {
+        if (this.innerHTML == null) {
+            this.calculateInnerHTML();
+        }
         return this.innerHTML;
     }
 

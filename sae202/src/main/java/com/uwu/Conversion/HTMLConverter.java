@@ -166,9 +166,12 @@ public class HTMLConverter implements IConverter {
         while (i < content.length) {
             char c = content[i];
             // on ajoute le caractère au outerHTML de la balise parent
-            if (!balises.isEmpty()) balises.peek().addOuterHTML(String.valueOf(c));
+
             // si on tombe sur une balise on la traite
-            if (c == '<') {
+            if (!(c == '<')) {
+                if (!balises.isEmpty())
+                    balises.peek().addOuterHTML(String.valueOf(c));
+            } else {
                 String balise = "";
                 // on récupère tout le contenu de la balise jusqu'au ">"
                 while (content[i] != '>') {
@@ -180,7 +183,6 @@ public class HTMLConverter implements IConverter {
 
                 // on ajoute la balise au outerHTML de la balise parent
                 // étant donné que le premier while n'est plus pris en compte
-                if(!balises.isEmpty()) balises.peek().addOuterHTML(balise.substring(1, balise.length()));
 
                 // on récupère le nom de la balise sans le /, le < ou le >
                 String tagName = getTagName(balise);
@@ -215,6 +217,7 @@ public class HTMLConverter implements IConverter {
                             // balise juste
                             // au dessus dans la hierachie
                             HTMLElement element = balises.pop();
+                            element.addOuterHTML(balise);
                             elements.add(element);
 
                             if (!balises.isEmpty()) {
@@ -248,6 +251,28 @@ public class HTMLConverter implements IConverter {
         System.out.println("Nombre d'erreurs : " + error);
 
         return elements;
+    }
+
+    public void debugWriteAllHTML(ArrayList<HTMLElement> elements) {
+        StringBuilder content = new StringBuilder();
+        for (HTMLElement element : elements) {
+            content.append(element.getOuterHTML());
+            content.append("\n\n");
+        }
+
+        try {
+            String filenameWithoutPath = this.fileName.contains("/")
+                    ? this.fileName.substring(this.fileName.lastIndexOf("/") + 1,
+                            this.fileName.lastIndexOf(".html"))
+                    : this.fileName.substring(0, this.fileName.lastIndexOf(".html"));
+            String pathURL = this.path + filenameWithoutPath + "-parsed.txt";
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
+            writer.write(content.toString());
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getTagName(String balise) {
