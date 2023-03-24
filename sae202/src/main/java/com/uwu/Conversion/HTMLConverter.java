@@ -44,10 +44,12 @@ public class HTMLConverter implements IConverter {
 
     public String fileName;
     public String path;
+    public String ClassText;
 
-    public HTMLConverter(String fileName, String path) {
+    public HTMLConverter(String fileName, String path, String classText) {
         this.fileName = fileName;
         this.path = path;
+        this.ClassText = classText;
     }
 
     @Override
@@ -120,7 +122,7 @@ public class HTMLConverter implements IConverter {
          */
         ArrayList<HTMLElement> elements = Parser();
         DOMSelecter selecter = new DOMSelecter(elements);
-        HTMLElement el = selecter.selectFirst("class", "text");
+        HTMLElement el = selecter.selectFirst("class", this.ClassText);
         if (el == null)
             return "";
         StringBuilder sb = new StringBuilder();
