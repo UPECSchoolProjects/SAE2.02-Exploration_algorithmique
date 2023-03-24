@@ -1,4 +1,4 @@
-name: JAVA_CI
+name: Maven Tests Github
 
 on: [push]
 
