@@ -45,7 +45,7 @@ public class HTMLConverter implements IConverter {
     public String path;
     public String filenameWithoutPath;
 
-    public HTMLConverter(String fileName, String path) {
+    public HTMLConverter(String fileName, String path, String classText) {
         this.fileName = fileName;
         this.path = path;
         this.filenameWithoutPath = this.fileName.contains("/")
