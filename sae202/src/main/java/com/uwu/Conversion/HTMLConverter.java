@@ -42,15 +42,22 @@ public class HTMLConverter implements IConverter {
     public static final Pattern TagNameRegex = Pattern.compile("</?([^> /]+)", Pattern.MULTILINE);
 
     public String fileName;
-    public String path;
+    public String inputPath;
     public String filenameWithoutExtension;
     public String classText;
+    public String outputPath;
+    private String outputPathURL;
+    private String fileURL;
 
-    public HTMLConverter(String fileName, String path, String classText) {
+    public HTMLConverter(String inputPath, String fileName, String outputPath, String classText) {
         this.fileName = fileName;
-        this.path = path;
-        this.filenameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
+        this.inputPath = inputPath;
+        this.outputPath = outputPath;
         this.classText = classText;
+        
+        this.filenameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
+        this.outputPathURL = this.outputPath + this.filenameWithoutExtension + "-parsed.txt";
+        this.fileURL = this.inputPath + this.fileName;
     }
 
     @Override
@@ -60,13 +67,12 @@ public class HTMLConverter implements IConverter {
         if (content == null)
             return null;
         try {
-            String pathURL = this.path + this.filenameWithoutExtension + "-parsed.txt";
-            BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputPathURL));
             writer.write(content);
 
             writer.close();
 
-            return new File(pathURL);
+            return new File(this.outputPathURL);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -79,7 +85,7 @@ public class HTMLConverter implements IConverter {
          */
         // Ouvre le fichier HTML en utilisant un BufferedReader pour lire ligne par
         // ligne
-        try (final BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
+        try (final BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
             final StringBuilder sb = new StringBuilder();
 
             // ligne nb est utilisé pour le debug, pour mesurer l'avancement
@@ -264,8 +270,7 @@ public class HTMLConverter implements IConverter {
         }
 
         try {
-            final String pathURL = this.path + this.filenameWithoutExtension + "-parsed.txt";
-            final BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
+            final BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputPathURL));
             writer.write(content.toString());
 
             writer.close();
