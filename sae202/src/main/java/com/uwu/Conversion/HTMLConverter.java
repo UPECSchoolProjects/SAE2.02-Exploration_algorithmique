@@ -43,15 +43,14 @@ public class HTMLConverter implements IConverter {
 
     public String fileName;
     public String path;
-    public String filenameWithoutPath;
+    public String filenameWithoutExtension;
+    public String classText;
 
     public HTMLConverter(String fileName, String path, String classText) {
         this.fileName = fileName;
         this.path = path;
-        this.filenameWithoutPath = this.fileName.contains("/")
-                ? this.fileName.substring(this.fileName.lastIndexOf("/") + 1,
-                        this.fileName.lastIndexOf(".html"))
-                : this.fileName.substring(0, this.fileName.lastIndexOf(".html"));
+        this.filenameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
+        this.classText = classText;
     }
 
     @Override
@@ -61,7 +60,7 @@ public class HTMLConverter implements IConverter {
         if (content == null)
             return null;
         try {
-            String pathURL = this.path + this.filenameWithoutPath + "-parsed.txt";
+            String pathURL = this.path + this.filenameWithoutExtension + "-parsed.txt";
             BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
             writer.write(content);
 
@@ -121,7 +120,7 @@ public class HTMLConverter implements IConverter {
          */
         final ArrayList<HTMLElement> elements = Parser();
         final DOMSelecter selecter = new DOMSelecter(elements);
-        final HTMLElement el = selecter.selectFirst("class", "text");
+        final HTMLElement el = selecter.selectFirst("class", this.classText);
         if (el == null)
             return "";
         final StringBuilder sb = new StringBuilder();
@@ -265,7 +264,7 @@ public class HTMLConverter implements IConverter {
         }
 
         try {
-            final String pathURL = this.path + this.filenameWithoutPath + "-parsed.txt";
+            final String pathURL = this.path + this.filenameWithoutExtension + "-parsed.txt";
             final BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
             writer.write(content.toString());
 
