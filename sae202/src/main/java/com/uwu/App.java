@@ -49,10 +49,5 @@ public class App {
         // e.printStackTrace();
         // }
 
-
-        logger.debug("aaa");
-
-        logger.error("vvv");
-
     }
 }
