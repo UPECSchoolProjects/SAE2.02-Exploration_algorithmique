@@ -18,12 +18,9 @@ public class PdfConverter implements IConverter {
 
     @Override
     public File convert() {
-        PDDocument document = null;
-        BufferedWriter writer = null;
-
         try {
-            document = PDDocument.load(new File(filePath));
-            writer = new BufferedWriter(new FileWriter("output.txt"));
+            PDDocument document = PDDocument.load(new File(filePath));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
 
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.writeText(document, writer);
