@@ -65,7 +65,7 @@ public class HTMLElement {
             return;
         }
 
-        this.innerHTML = this.outerHTML.substring(this.outerHTML.indexOf('>') + 1, endTagIndex);
+        this.innerHTML = this.outerHTML.substring(this.outerHTML.indexOf('>') + 1, endTagIndex).trim();
     }
 
     public String getInnerHTML() {
@@ -77,7 +77,7 @@ public class HTMLElement {
 
     public String getInnerText() {
         // cette fonction retourne le texte contenu dans la balise sans tout l'html imbriqué
-        return this.outerHTML.replaceAll("<[^>]*>", "");
+        return this.outerHTML.replaceAll("<[^>]*>", "").trim();
     }
 
     public String getOuterHTML() {
