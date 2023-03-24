@@ -1,0 +1,13 @@
+<body>
+    <div id="container" class="aaa">
+        <div id="content">
+            <section>
+                <div class="description">
+                    Bienvenue sur wikiAnime.
+                </div>
+            </section>
+        </div>
+    </div>
+</body>
+
+</html>

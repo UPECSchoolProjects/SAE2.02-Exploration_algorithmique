@@ -1,6 +1,6 @@
 {
+    "java.configuration.updateBuildConfiguration": "interactive",
     "java.project.sourcePaths": [
         "sae202/src/main/java"
-    ],
-    "java.configuration.updateBuildConfiguration": "interactive"
+    ]
 }
