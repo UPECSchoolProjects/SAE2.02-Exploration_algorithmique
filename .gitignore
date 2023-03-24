@@ -23,9 +23,9 @@
 hs_err_pid*
 replay_pid*
 sae202/src/main/java/com/uwu/App.java
-target/**/*
-target/*
-target/surefire-reports/*
+**/target/**/*
+**/target/*
+**/target/surefire-reports/*
 sae202/target/surefire-reports/com.uwu.ConvertersTest.txt
 sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
 sae202/target/surefire-reports/TEST-com.uwu.ConvertersTest.xml
@@ -34,4 +34,7 @@ sae202/target/log4j2.properties
 sae202/target/classes/log4j2.properties
 sae202/target/surefire-reports/com.uwu.AppTest.txt
 sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
+sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
+sae202/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+sae202/target/surefire-reports/com.uwu.AppTest.txt
 sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
