@@ -7,6 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.regex.Matcher;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +20,8 @@ import com.uwu.Conversion.HTMLParser.DOMSelecter;
 import com.uwu.Conversion.HTMLParser.HTMLElement;
 
 public class HTMLConverter implements IConverter {
+    private static final Logger logger = LogManager.getLogger(HTMLConverter.class);
+
     public static final Pattern bodyRegex = Pattern.compile("<body");
     public static final Pattern baliseRegex = Pattern
             .compile("<(/?\\w+)((\\s+\\w+(\\s*=\\s*(\".*?\"|'.*?'|[\\^'\">\\s]+))?)+\\s*|\\s*)/?>");
@@ -51,13 +57,28 @@ public class HTMLConverter implements IConverter {
 
     public HTMLConverter(String inputPath, String fileName, String outputPath, String classText) {
         this.fileName = fileName;
-        this.inputPath = inputPath;
-        this.outputPath = outputPath;
+        this.inputPath = inputPath == null ? "" : inputPath;
+        this.outputPath = outputPath == null ? "" : outputPath;
         this.classText = classText;
         
         this.filenameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
         this.outputPathURL = this.outputPath + this.filenameWithoutExtension + "-parsed.txt";
         this.fileURL = this.inputPath + this.fileName;
+
+        // check if the file exists
+        File file = new File(this.fileURL);
+        if (!file.exists()) {
+            //throw new IllegalArgumentException("File " + this.fileURL + " does not exist");
+            // create a new file
+            // create dirs
+            File dir = new File(this.inputPath);
+            dir.mkdirs();
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -95,7 +116,7 @@ public class HTMLConverter implements IConverter {
             // Lit le fichier HTML ligne par ligne
             do {
                 line = br.readLine(); // on recupere la prochaine ligne
-                System.out.println(linenb); // debug
+                logger.trace(linenb); // debug
                 linenb++;
 
                 if (line == null) // si la ligne est null, on a atteint la fin du fichier
@@ -130,9 +151,9 @@ public class HTMLConverter implements IConverter {
         if (el == null)
             return "";
         final StringBuilder sb = new StringBuilder();
-        System.out.println("---------------");
+        logger.debug("---------------");
         for (HTMLElement child : el.children) {
-            System.out.println(child.tag);
+            logger.debug(child.tag);
             if (child.tag.equals("p")) {
                 sb.append(child.getInnerText());
             }
@@ -208,7 +229,7 @@ public class HTMLConverter implements IConverter {
                     continue;
                 }
 
-                System.out.println("Balise : " + tagName);
+                logger.debug("Balise : " + tagName);
 
                 // si la balise est une balise non autofermante, on la traite
                 if (balisesNonAutofermantes.contains(tagName)) {
@@ -242,7 +263,7 @@ public class HTMLConverter implements IConverter {
                             // peut
                             // fonctionner quand même
                             error++;
-                            System.out.println("Balise non fermée : " + balise);
+                            logger.warn("Balise non fermée : " + balise);
                         }
                     } else {
                         // Si c'est une balise ouvrante, on l'ajoute au stack
@@ -252,12 +273,12 @@ public class HTMLConverter implements IConverter {
                 } else {
                     // cela veut dire que c'est une balise html qui n'existe pas dans la
                     // spécification XHTML
-                    System.err.println("Balise non reconnue : " + balise);
+                    logger.warn("Balise non reconnue : " + balise);
                 }
             }
             i++;
         }
-        System.out.println("Nombre d'erreurs : " + error);
+        logger.info("Nombre d'erreurs : " + error);
 
         return elements;
     }

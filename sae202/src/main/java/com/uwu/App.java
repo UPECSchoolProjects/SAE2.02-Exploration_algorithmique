@@ -11,9 +11,13 @@ import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class App {
+    private static final Logger logger = LogManager.getLogger(App.class);
+
     public static void main(String[] args) throws Exception {
 
         // HTMLConverter html = new HTMLConverter("HTMLTEST/Histoire de Neuilly par
@@ -44,6 +48,11 @@ public class App {
         // } catch (IOException e) {
         // e.printStackTrace();
         // }
+
+
+        logger.debug("aaa");
+
+        logger.error("vvv");
 
     }
 }
