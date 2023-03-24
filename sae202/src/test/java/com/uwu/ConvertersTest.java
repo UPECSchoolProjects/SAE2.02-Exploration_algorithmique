@@ -15,17 +15,16 @@ import org.apache.logging.log4j.Logger;
 /**
  * Unit test for simple App.
  */
-public class ConvertersTest 
-{
+public class ConvertersTest {
     private static final Logger logger = LogManager.getLogger(ConvertersTest.class);
 
     private static String textMatcher = "Histoire de Neuilly par l'Abbé Bellanger";
+
     /**
      * Rigorous Test :-)
      */
     @Test
-    public void testHTMLConverter()
-    {
+    public void testHTMLConverter() {
         HTMLConverter html = new HTMLConverter("TestsInputs/", "test.html", null, "root");
         String text = html.getText();
 
@@ -35,9 +34,8 @@ public class ConvertersTest
     }
 
     @Test
-    public void testPDFConverter()
-    {
-        PdfConverter pdf = new PdfConverter("TestsInputs/", "test.pdf", "TestsOutput/"); 
+    public void testPDFConverter() {
+        PdfConverter pdf = new PdfConverter("TestsInputs/", "test.pdf", "TestsOutput/");
 
         File file = pdf.convert();
 
@@ -52,10 +50,5 @@ public class ConvertersTest
         logger.debug("PDF TEXT : " + text);
 
         assertTrue(text.trim().equals(textMatcher));
-    }
-
-    @Test
-    public void testDemo() {
-        assertTrue(false);
     }
 }
