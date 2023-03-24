@@ -16,40 +16,42 @@ import com.uwu.Conversion.HTMLParser.DOMSelecter;
 import com.uwu.Conversion.HTMLParser.HTMLElement;
 
 public class HTMLConverter implements IConverter {
-    public static Pattern bodyRegex = Pattern.compile("<body");
-    public static Pattern baliseRegex = Pattern
+    public static final Pattern bodyRegex = Pattern.compile("<body");
+    public static final Pattern baliseRegex = Pattern
             .compile("<(/?\\w+)((\\s+\\w+(\\s*=\\s*(\".*?\"|'.*?'|[\\^'\">\\s]+))?)+\\s*|\\s*)/?>");
-    public static Pattern htmlCommentRegex = Pattern.compile("<!--[^-]+-->");
+    public static final Pattern htmlCommentRegex = Pattern.compile("<!--[^-]+-->");
 
-    public static ArrayList<String> balisesAutofermantes = new ArrayList<String>(Arrays.asList(
-            "area", "base", "br", "col", "command", "embed", "hr", "img", "input",
-            "keygen", "link", "meta", "param", "source", "track", "wbr"));
+    public static final ArrayList<String> balisesAutofermantes = new ArrayList<String>(
+            Arrays.asList("area", "base", "br", "col", "command", "embed", "hr", "img", "input",
+                    "keygen", "link", "meta", "param", "source", "track", "wbr"));
 
     // Liste des balises non auto-fermantes
-    public static ArrayList<String> balisesNonAutofermantes = new ArrayList<String>(Arrays.asList(
-            "a", "abbr", "address", "article", "aside", "audio", "b", "bdi", "bdo",
-            "blockquote", "body", "button", "canvas", "caption", "cite", "code", "data",
-            "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt",
-            "em", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2",
-            "h3", "h4", "h5", "h6", "head", "header", "hgroup", "html", "i", "iframe",
-            "ins", "kbd", "label", "legend", "li", "main", "map", "mark", "menu",
-            "menuitem", "meter", "nav", "noscript", "object", "ol", "optgroup",
-            "option", "output", "p", "picture", "pre", "progress", "q", "rp", "rt",
-            "ruby", "s", "samp", "script", "section", "select", "small", "span",
-            "strong", "style", "sub", "summary", "sup", "svg", "table", "tbody",
-            "td", "template", "textarea", "tfoot", "th", "thead", "time", "title",
-            "tr", "u", "ul", "var", "video", "center"));
+    public static final ArrayList<String> balisesNonAutofermantes = new ArrayList<String>(
+            Arrays.asList("a", "abbr", "address", "article", "aside", "audio", "b", "bdi", "bdo",
+                    "blockquote", "body", "button", "canvas", "caption", "cite", "code", "data",
+                    "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt", "em",
+                    "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4",
+                    "h5", "h6", "head", "header", "hgroup", "html", "i", "iframe", "ins", "kbd",
+                    "label", "legend", "li", "main", "map", "mark", "menu", "menuitem", "meter",
+                    "nav", "noscript", "object", "ol", "optgroup", "option", "output", "p",
+                    "picture", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "script",
+                    "section", "select", "small", "span", "strong", "style", "sub", "summary",
+                    "sup", "svg", "table", "tbody", "td", "template", "textarea", "tfoot", "th",
+                    "thead", "time", "title", "tr", "u", "ul", "var", "video", "center"));
 
-    public static Pattern TagNameRegex = Pattern.compile("</?([^> /]+)", Pattern.MULTILINE);
+    public static final Pattern TagNameRegex = Pattern.compile("</?([^> /]+)", Pattern.MULTILINE);
 
     public String fileName;
     public String path;
-    public String ClassText;
+    public String filenameWithoutPath;
 
     public HTMLConverter(String fileName, String path, String classText) {
         this.fileName = fileName;
         this.path = path;
-        this.ClassText = classText;
+        this.filenameWithoutPath = this.fileName.contains("/")
+                ? this.fileName.substring(this.fileName.lastIndexOf("/") + 1,
+                        this.fileName.lastIndexOf(".html"))
+                : this.fileName.substring(0, this.fileName.lastIndexOf(".html"));
     }
 
     @Override
@@ -59,10 +61,7 @@ public class HTMLConverter implements IConverter {
         if (content == null)
             return null;
         try {
-            String filenameWithoutPath = this.fileName.contains("/")
-                    ? this.fileName.substring(this.fileName.lastIndexOf("/") + 1, this.fileName.lastIndexOf(".html"))
-                    : this.fileName.substring(0, this.fileName.lastIndexOf(".html"));
-            String pathURL = this.path + filenameWithoutPath + "-parsed.txt";
+            String pathURL = this.path + this.filenameWithoutPath + "-parsed.txt";
             BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
             writer.write(content);
 
@@ -81,8 +80,8 @@ public class HTMLConverter implements IConverter {
          */
         // Ouvre le fichier HTML en utilisant un BufferedReader pour lire ligne par
         // ligne
-        try (BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
-            StringBuilder sb = new StringBuilder();
+        try (final BufferedReader br = new BufferedReader(new FileReader(this.fileName))) {
+            final StringBuilder sb = new StringBuilder();
 
             // ligne nb est utilisé pour le debug, pour mesurer l'avancement
             int linenb = 0;
@@ -117,15 +116,15 @@ public class HTMLConverter implements IConverter {
 
     public String getText() {
         /*
-         * Cette fonction recupere toutes les balise de l'HTML, et en extrait le texte
-         * ELle est spécifique à WikiSource
+         * Cette fonction recupere toutes les balise de l'HTML, et en extrait le texte ELle est
+         * spécifique à WikiSource
          */
-        ArrayList<HTMLElement> elements = Parser();
-        DOMSelecter selecter = new DOMSelecter(elements);
-        HTMLElement el = selecter.selectFirst("class", this.ClassText);
+        final ArrayList<HTMLElement> elements = Parser();
+        final DOMSelecter selecter = new DOMSelecter(elements);
+        final HTMLElement el = selecter.selectFirst("class", "text");
         if (el == null)
             return "";
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         System.out.println("---------------");
         for (HTMLElement child : el.children) {
             System.out.println(child.tag);
@@ -134,31 +133,26 @@ public class HTMLConverter implements IConverter {
             }
         }
 
-        return sb.toString().replaceAll("&#160;;", "").replaceAll("&#160;", "").replaceAll("\\s+", " ").replaceAll("\t",
-                "");
+        return sb.toString().replaceAll("&#160;;", "").replaceAll("&#160;", "")
+                .replaceAll("\\s+", " ").replaceAll("\t", "");
     }
 
     public ArrayList<HTMLElement> Parser() {
         /*
-         * Cette fonction permet de parser le fichier HTML et de retourner une liste
-         * d'HTMLElement (classe définie dans le package com.uwu.Conversion.HTMLParser)
-         * ELle utilise un stack pour gérer les balises ouvertes et fermées
-         * Elle lis les caractères un par un et les ajoute dans le outerHTML de toutes
-         * les balises qui n'ont pas encore été fermée
-         * Une fois qu'une balise est fermée, celà veut dire que le contenu de la balise
-         * est terminé, on peut donc l'ajouter à la liste de balise et la sortir du
-         * stack
-         * De plus on ajoute la balise fermante à la liste des enfants de la balise
-         * juste au dessus dans la hierachie
+         * Cette fonction permet de parser le fichier HTML et de retourner une liste d'HTMLElement
+         * (classe définie dans le package com.uwu.Conversion.HTMLParser) ELle utilise un stack pour
+         * gérer les balises ouvertes et fermées Elle lis les caractères un par un et les ajoute
+         * dans le outerHTML de toutes les balises qui n'ont pas encore été fermée Une fois qu'une
+         * balise est fermée, celà veut dire que le contenu de la balise est terminé, on peut donc
+         * l'ajouter à la liste de balise et la sortir du stack De plus on ajoute la balise fermante
+         * à la liste des enfants de la balise juste au dessus dans la hierachie
          * 
-         * Cette fonction est la forme la plus simple que pourrait prendre un parser
-         * HTML, il y a beaucoup de choses à améliorer
-         * Néanmoins, il est plus que suffisant pour notre projet. (il ne garde pas dans
-         * tout les cas la mise en forme du texte)
+         * Cette fonction est la forme la plus simple que pourrait prendre un parser HTML, il y a
+         * beaucoup de choses à améliorer Néanmoins, il est plus que suffisant pour notre projet.
+         * (il ne garde pas dans tout les cas la mise en forme du texte)
          * 
-         * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer
-         * un défi personnel et de faire un parser HTML basique en Java, c'était assez
-         * amusant à faire
+         * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer un défi
+         * personnel et de faire un parser HTML basique en Java, c'était assez amusant à faire
          * (Maxime LOTTO)
          */
 
@@ -166,19 +160,21 @@ public class HTMLConverter implements IConverter {
         int error = 0;
 
         // le stack qui va contenir les balises ouvertes et leur ordre d'ouverture
-        Stack<HTMLElement> balises = new Stack<HTMLElement>();
+        final Stack<HTMLElement> balises = new Stack<HTMLElement>();
         // la liste qui va contenir toutes les balises fermée une fois que l'on a tout
         // leur contenu
-        ArrayList<HTMLElement> elements = new ArrayList<HTMLElement>();
+        final ArrayList<HTMLElement> elements = new ArrayList<HTMLElement>();
         int i = 0;
         while (i < content.length) {
             char c = content[i];
-            // on ajoute le caractère au outerHTML de toutes les balises ouvertes
-            for (HTMLElement element : balises) {
-                element.addOuterHTML(String.valueOf(c));
-            }
+            
+
             // si on tombe sur une balise on la traite
-            if (c == '<') {
+            if (!(c == '<')) {
+                // on ajoute le caractère au outerHTML de la balise parent
+                if (!balises.isEmpty())
+                    balises.peek().addOuterHTML(String.valueOf(c));
+            } else {
                 String balise = "";
                 // on récupère tout le contenu de la balise jusqu'au ">"
                 while (content[i] != '>') {
@@ -188,16 +184,15 @@ public class HTMLConverter implements IConverter {
 
                 balise += content[i];
 
-                // on ajoute la balise au outerHTML de toutes les balises ouvertes
+                // on ajoute la balise au outerHTML de la balise parent
                 // étant donné que le premier while n'est plus pris en compte
-                for (HTMLElement element : balises) {
-                    element.addOuterHTML(balise.substring(1, balise.length()));
-                }
 
                 // on récupère le nom de la balise sans le /, le < ou le >
-                String tagName = getTagName(balise);
-                boolean closing = balise.startsWith("</"); // si la balise commence par </ alors c'est une balise
-                                                           // fermante
+                final String tagName = getTagName(balise);
+                final boolean closing = balise.startsWith("</"); // si la balise commence par </
+                                                                 // alors
+                // c'est une balise
+                // fermante
 
                 // si la balise est autofermante on ne s'en occupe pas, elle ne sert à rien pour
                 // la SAE, on ne veut que le texte
@@ -215,31 +210,38 @@ public class HTMLConverter implements IConverter {
                     // si jamais la balise est fermante, on regarde si la deniere balise ouverte est
                     // la même que celle qu'on vient de fermer
                     if (closing) {
-                        // balise.peek() permet de récupérer la dernière balise ouverte sans la sortir
+                        // balise.peek() permet de récupérer la dernière balise ouverte sans la
+                        // sortir
                         // du stack
                         if (balises.peek().tag.equals(tagName)) {
-                            // Si la balise est la même que la dernière balise ouverte, on la sort du stack
+                            // Si la balise est la même que la dernière balise ouverte, on la sort
+                            // du stack
                             // et on l'ajoute à la liste des balises fermées
-                            // on ajoute aussi la balise fermante à la liste des enfants de la balise juste
+                            // on ajoute aussi la balise fermante à la liste des enfants de la
+                            // balise juste
                             // au dessus dans la hierachie
-                            HTMLElement element = balises.pop();
+                            final HTMLElement element = balises.pop();
+                            element.addOuterHTML(balise);
                             elements.add(element);
 
                             if (!balises.isEmpty()) {
                                 balises.peek().addChild(element);
+                                balises.peek().addOuterHTML(element.getOuterHTML());
                             }
                         } else {
-                            // si la balise fermante n'est pas la même que la dernière balise ouverte, cela
+                            // si la balise fermante n'est pas la même que la dernière balise
+                            // ouverte, cela
                             // veut dire qu'il y a une erreur dans le code HTML
                             // on affiche un message d'erreur et on incrémente le nombre d'erreur
-                            // il y'a de forte chance que le reste du parsing se déroule mal mais ça peut
+                            // il y'a de forte chance que le reste du parsing se déroule mal mais ça
+                            // peut
                             // fonctionner quand même
                             error++;
                             System.out.println("Balise non fermée : " + balise);
                         }
                     } else {
                         // Si c'est une balise ouvrante, on l'ajoute au stack
-                        HTMLElement element = new HTMLElement(tagName, false, balise);
+                        final HTMLElement element = new HTMLElement(tagName, false, balise);
                         balises.push(element);
                     }
                 } else {
@@ -255,8 +257,26 @@ public class HTMLConverter implements IConverter {
         return elements;
     }
 
-    public String getTagName(String balise) {
-        Matcher tagNameMatcher = TagNameRegex.matcher(balise);
+    public void debugWriteAllHTML(final ArrayList<HTMLElement> elements) {
+        final StringBuilder content = new StringBuilder();
+        for (final HTMLElement element : elements) {
+            content.append(element.getOuterHTML());
+            content.append("\n\n");
+        }
+
+        try {
+            final String pathURL = this.path + this.filenameWithoutPath + "-parsed.txt";
+            final BufferedWriter writer = new BufferedWriter(new FileWriter(pathURL));
+            writer.write(content.toString());
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getTagName(final String balise) {
+        final Matcher tagNameMatcher = TagNameRegex.matcher(balise);
         if (tagNameMatcher.find()) {
             return tagNameMatcher.group(1);
         } else {
