@@ -33,7 +33,7 @@ public class Analyse {
         return sb.toString();
     }
 
-    public List<Map.Entry<String, Integer>> calculerFrequences() {
+    public Map<String, Integer> calculerFrequences() {
 
         String text;
         try {
@@ -56,7 +56,13 @@ public class Analyse {
         List<Map.Entry<String, Integer>> listeFreq = new ArrayList<>(freq.entrySet());
         listeFreq.sort((a, b) -> b.getValue().compareTo(a.getValue()));
 
-        return listeFreq;
+        // reconverti la liste en map
+        Map<String, Integer> map = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : listeFreq) {
+            map.put(entry.getKey(), entry.getValue());
+        }
+
+        return map;
     }
 }
 
