@@ -63,14 +63,14 @@ public class Analyse {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) { // Ouvre le fichier
             String ligne;
             while ((ligne = br.readLine()) != null) {           // Lit le fichier ligne par ligne
-                String[] mots = ligne.split("\W+");      // Sépare la ligne en mots
+                String[] mots = ligne.split("\\W+");      // Sépare la ligne en mots
                 for (String mot : mots) {
                     mot = mot.toLowerCase(); // Met le mot en minuscule
                     mot = mot.replaceAll("[^a-z]", ""); // Supprime les caractères non alphabétiques
-                    mot_array = mot.toCharArray(); // Convertit le mot en tableau de caractères
+                    char[] mot_array = mot.toCharArray(); // Convertit le mot en tableau de caractères
                     for (int i = 0; i < mot_array.length; i++) { // Parcourt le tableau de caractères
-                        if (exceptedMap.containsKey(mot_array[i])) { // Vérifie si le caractère est dans la Map
-                            mot_array[i] = exceptedMap.get(mot_array[i]).charAt(0); // Remplace le caractère
+                        if (exceptedMap.containsKey(String.valueOf(mot_array[i]))) { // Vérifie si le caractère est dans la Map
+                            mot_array[i] = exceptedMap.get(String.valueOf(mot_array[i])).charAt(0); // Remplace le caractère
                         }
                     }
                     mot = new String(mot_array); // Convertit le tableau de caractères en String
