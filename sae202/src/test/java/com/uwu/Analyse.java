@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Analyse {
@@ -58,12 +56,9 @@ public class Analyse {
 
      
                                                                   // 
-    public void ecrireCSV(String nomFichier) throws IOException {  // Génère un fichier CSV avec les mots et leur fréquence
-        try (FileWriter writer = new FileWriter(nomFichier)) {
-            writer.append("MOT");
-            writer.append(";");
-            writer.append("FREQU
+    publi
 
+    
             
             Map<String, Integer> freq = calculerFrequences();
             for (Map.Entry<String, Integer> entry : freq.entrySet()) { // Parcourt la Map
@@ -74,4 +69,5 @@ public class Analyse {
             }
         }
  
+
 
