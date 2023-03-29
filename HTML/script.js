@@ -20,6 +20,7 @@ async function CSVToArray(strData, strDelimiter) {
         let currentline = lines[i].split(strDelimiter);
         obj["x"] = currentline[0];
         obj["value"] = currentline[1];
+        obj["freq"] = currentline[2];
         arr.push(obj);
     }
     return arr;
@@ -39,7 +40,7 @@ function chartSize(data, nbwords) {
 anychart.onDocumentReady(async function () {
     // fonction pour créer le nuage de mots
     var data = await CSVToArray(await fetchAsync("http://localhost:3000/frequences.csv"));
-    data = chartSize(data, 10);
+    data = chartSize(data, 500);
     // create a tag (word) cloud chart
     var chart = anychart.tagCloud(data);
 
@@ -50,8 +51,7 @@ anychart.onDocumentReady(async function () {
     // enable a color range
     chart.colorRange(true);
     // set the color range length
-    chart.colorRange().length('80%');
-    chart.tooltip().format(`Le mot {%x} apparait {%value} fois`);
+    chart.tooltip().format(`Le mot "{%x}" apparait {%freq}% des fois ({%value} fois)`);
 
     // display the word cloud chart
     chart.container("container");

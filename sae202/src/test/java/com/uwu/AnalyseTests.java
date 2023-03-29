@@ -11,8 +11,8 @@ import org.junit.Test;
  */
 public class AnalyseTests {
 
-    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot(0.5, 2)),
-            Map.entry("arbre", new AnalyseMot(0.5, 2)));
+    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot("pomme",0.5, 2)),
+            Map.entry("arbre", new AnalyseMot("arbre",0.5, 2)));
 
     @Test
     public void verifyAnalyse() {
