@@ -36,7 +36,6 @@ public class Analyse {
         try {
             this.lire_mot_vides();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

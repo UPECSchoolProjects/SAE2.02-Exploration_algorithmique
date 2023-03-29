@@ -1,11 +1,8 @@
 package com.uwu;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -24,7 +21,6 @@ public class AnalyseTests {
         try {
             map = analyseur.calculerFrequences();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new RuntimeException(e);
         }
