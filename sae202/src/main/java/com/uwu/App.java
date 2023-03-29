@@ -28,7 +28,7 @@ public class App {
 
         analyse analyseur = new analyse();
         List<String> motsVides = Arrays.asList("le", "la", "de", "du", "et", "ou", "mais", "donc", "pour", "par", "avec", "sans");
-        String cheminFichier = "test.txt";
+        String cheminFichier = "text/test.txt";
         try {
             List<Map.Entry<String, Integer>> listeFreq = analyseur.calculerFrequences(cheminFichier, motsVides);
             for (Map.Entry<String, Integer> entry : listeFreq) {
