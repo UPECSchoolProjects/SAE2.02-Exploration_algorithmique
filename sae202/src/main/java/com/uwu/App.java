@@ -6,6 +6,7 @@ import com.uwu.Conversion.IConverter;
 import com.uwu.Conversion.ConversionFactory;
 import com.uwu.Conversion.IConverter;
 import java.io.IOException;
+import java.security.KeyStore.Entry;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -23,9 +24,9 @@ public class App {
         // HTMLConverter html = new HTMLConverter("HTMLTEST/Histoire de Neuilly par
         // lAbbé Bellanger - Wikisource.html", "HTMLParsed/", "prp-pages-output");
         // html.convert();
-        HTMLConverter html = new HTMLConverter("HTMLTEST/", "html6.html", "HTMLParsed/", "text");
+        //HTMLConverter html = new HTMLConverter("HTMLTEST/", "html6.html", "HTMLParsed/", "text");
 
-        html.convert();
+        //html.convert();
 
         // IConverter cf = ConversionFactory.getConverter("test.pdf");
 
@@ -49,10 +50,14 @@ public class App {
         // e.printStackTrace();
         // }
 
+        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt");
 
-        logger.debug("aaa");
+        Map<String, Integer> listeFreq = analyseur.calculerFrequences();
 
-        logger.error("vvv");
+        for (Map.Entry<String, Integer> entry : listeFreq.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
 
+        
     }
 }
