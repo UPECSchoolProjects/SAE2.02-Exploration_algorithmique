@@ -39,3 +39,4 @@ sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
 sae202/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 sae202/target/surefire-reports/com.uwu.AppTest.txt
 sae202/target/surefire-reports/TEST-com.uwu.AppTest.xml
+sae202/src/main/java/com/uwu/App.java
