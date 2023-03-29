@@ -10,14 +10,15 @@ import org.junit.Test;
  * Unit test for simple App.
  */
 public class AnalyseTests {
-    Map<String, Integer> exceptedMap = Map.ofEntries(Map.entry("pomme", 2), Map.entry("arbre", 2));
 
+    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot(0.5, 2)),
+            Map.entry("arbre", new AnalyseMot(0.5, 2)));
 
     @Test
     public void verifyAnalyse() {
         Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt");
 
-        Map<String, Integer> map;
+        Map<String, AnalyseMot> map;
         try {
             map = analyseur.calculerFrequences();
         } catch (IOException e) {
@@ -25,6 +26,11 @@ public class AnalyseTests {
             throw new RuntimeException(e);
         }
 
-        assertEquals(map, exceptedMap);
+        for (Map.Entry<String, AnalyseMot> entry : map.entrySet()) {
+            assertEquals(exceptedMap.get(entry.getKey()).getFrequence(),
+                    entry.getValue().getFrequence(), 0);
+            assertEquals(exceptedMap.get(entry.getKey()).getOccurence(),
+                    entry.getValue().getOccurence(), 0);
+        }
     }
 }

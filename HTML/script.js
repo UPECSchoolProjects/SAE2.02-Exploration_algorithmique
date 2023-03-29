@@ -4,9 +4,7 @@ async function fetchAsync(url) {
     // fonction pour récuperer un fichier sur le serveur
     let response = await fetch(url);
     let data = await response.text();
-    console.log(response)
     console.log("Code :" + response.status)
-    console.log(data)
     return data;
 }
 
@@ -27,21 +25,33 @@ async function CSVToArray(strData, strDelimiter) {
     return arr;
 }
 
+function chartSize(data, nbwords) {
+    data.sort(function (a, b) {
+        return b.value - a.value;
+    });
+
+    //keep only the 15 most spoken languages
+    data = data.slice(0, nbwords);
+
+    return data
+}
+
 anychart.onDocumentReady(async function () {
     // fonction pour créer le nuage de mots
     var data = await CSVToArray(await fetchAsync("http://localhost:3000/frequences.csv"));
-    console.log(data)
+    data = chartSize(data, 10);
     // create a tag (word) cloud chart
     var chart = anychart.tagCloud(data);
 
     // set a chart title
-    chart.title('15 most spoken languages')
+    chart.title('Nuage de mots')
     // set an array of angles at which the words will be laid out
-    chart.angles([0])
+    chart.angles([0, 10, -10])
     // enable a color range
     chart.colorRange(true);
     // set the color range length
     chart.colorRange().length('80%');
+    chart.tooltip().format(`Le mot {%x} apparait {%value} fois`);
 
     // display the word cloud chart
     chart.container("container");

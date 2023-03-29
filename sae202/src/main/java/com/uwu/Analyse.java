@@ -8,11 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Analyse {
+
     private static final Logger logger = LogManager.getLogger(App.class);
 
     static private java.util.Map<String, String> exceptedMap =
@@ -50,10 +52,11 @@ public class Analyse {
         }
     }
 
-    public Map<String, Integer> calculerFrequences() throws IOException { // Renvoie une Map avec
+    public Map<String, AnalyseMot> calculerFrequences() throws IOException { // Renvoie une Map avec
                                                                           // les mots et leur
                                                                           // fréquence
-        Map<String, Integer> freq = new HashMap<>();
+        int nbMot = 0;
+        Map<String, Integer> compteur = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) { // Ouvre le fichier
             String ligne;
             while ((ligne = br.readLine()) != null) { // Lit le fichier ligne par ligne
@@ -77,15 +80,25 @@ public class Analyse {
                     mot = new String(mot_array); // Convertit le tableau de caractères en String
                     logger.trace("mot: " + mot + " - length: " + mot.length());
                     if ((!motsVides.contains(mot)) && mot.length() > 0) { // Vérifie que le mot n'est
-                                                                        // pas vide
-                        freq.put(mot, freq.getOrDefault(mot, 0) + 1); // Incrémente la fréquence du
+                                                                       // pas vide
+                        nbMot++;                                        
+                        compteur.put(mot, compteur.getOrDefault(mot, 0) + 1); // Incrémente la fréquence du
                                                                       // mot
                     }
                 }
             }
         }
-        logger.trace("freq: " + freq);
-        return freq;
+        logger.trace("freq: " + compteur);
+        logger.debug("nbMot: " + nbMot);
+        Map<String, AnalyseMot> analyseMap = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : compteur.entrySet()) { // Parcourt la Map
+            if (entry.getValue() > 1) { // Vérifie que le mot apparait plus d'une fois
+                AnalyseMot analyseMot = new AnalyseMot(entry.getValue()/((double)nbMot), entry.getValue());
+                analyseMap.put(entry.getKey(), analyseMot); // Ajoute le mot et sa fréquence
+                logger.trace("mot: " + entry.getKey() + " - occurence: " + entry.getValue() + " - freq: " + entry.getValue()/((double)nbMot));
+            }
+        }
+        return analyseMap;
     }
 
     //
@@ -95,14 +108,18 @@ public class Analyse {
         try (FileWriter writer = new FileWriter(nomFichier)) {
             writer.append("MOT");
             writer.append(";");
-            writer.append("FREQUENCE");
+            writer.append("Occurence");
+            writer.append(";");
+            writer.append("Frequence");
             writer.append("\n");
 
-            Map<String, Integer> freq = calculerFrequences();
-            for (Map.Entry<String, Integer> entry : freq.entrySet()) { // Parcourt la Map
+            Map<String, AnalyseMot> freq = calculerFrequences();
+            for (Map.Entry<String, AnalyseMot> entry : freq.entrySet()) { // Parcourt la Map
                 writer.append(entry.getKey());
                 writer.append(";");
-                writer.append(entry.getValue().toString());
+                writer.append(String.valueOf(entry.getValue().getOccurence()));
+                writer.append(";");
+                writer.append(String.valueOf(entry.getValue().getFrequence()));
                 writer.append("\n");
             }
         }
