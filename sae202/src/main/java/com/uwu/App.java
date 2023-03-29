@@ -35,6 +35,20 @@ public class App {
         // File test = new File("test.txt");
         // System.out.println(test);
 
+<<<<<<< HEAD
+        analyse analyseur = new analyse();
+        List<String> motsVides = Arrays.asList("le", "la", "de", "du", "et", "ou", "mais", "donc", "pour", "par", "avec", "sans");
+        String cheminFichier = "text/test.txt";
+        try {
+            List<Map.Entry<String, Integer>> listeFreq = analyseur.calculerFrequences(cheminFichier, motsVides);
+            for (Map.Entry<String, Integer> entry : listeFreq) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+            }
+    
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+=======
         // analyse analyseur = new analyse();
         // List<String> motsVides = Arrays.asList("le", "la", "de", "du", "et", "ou",
         // "mais", "donc", "pour", "par", "avec", "sans");
@@ -45,6 +59,7 @@ public class App {
         // for (Map.Entry<String, Integer> entry : listeFreq) {
         // System.out.println(entry.getKey() + " : " + entry.getValue());
         // }
+>>>>>>> a5e3f92dbe13ba5a4442e3a27905feeee756963d
 
         // } catch (IOException e) {
         // e.printStackTrace();

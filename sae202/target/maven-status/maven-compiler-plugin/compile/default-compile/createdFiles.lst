@@ -1,8 +1,0 @@
-com\uwu\Conversion\PdfConverter.class
-com\uwu\Conversion\HTMLParser\HTMLElement.class
-com\uwu\Conversion\HTMLConverter.class
-com\uwu\Conversion\IConverter.class
-com\uwu\App.class
-com\uwu\Analyse.class
-com\uwu\Conversion\ConversionFactory.class
-com\uwu\Conversion\HTMLParser\DOMSelecter.class
