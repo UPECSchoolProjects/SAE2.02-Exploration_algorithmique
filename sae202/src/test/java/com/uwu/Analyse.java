@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Analyse {
-    
+
     ArrayList<String> motsVides = new ArrayList<String>();
     private String filePath;
 
@@ -37,31 +37,33 @@ public class Analyse {
         }
     }
 
-
-    public Map<String, Integer> calculerFrequences() throws IOException { // Renvoie une Map avec les mots et leur fréquence
+    public Map<String, Integer> calculerFrequences() throws IOException { // Renvoie une Map avec les mots et leur
+                                                                          // fréquence
         Map<String, Integer> freq = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) { // Ouvre le fichier
             String ligne;
-            while ((ligne = br.readLine()) != null) {           // Lit le fichier ligne par ligne
-                String[] mots = ligne.split("\\W+");      // Sépare la ligne en mots
+            while ((ligne = br.readLine()) != null) { // Lit le fichier ligne par ligne
+                String[] mots = ligne.split("\\W+"); // Sépare la ligne en mots
                 for (String mot : mots) {
-                    mot = mot.toLowerCase();                   // Met le mot en minuscule
-                    if (!motsVides.contains(mot) && mot.length() > 1) {             // Vérifie que le mot n'est pas vide
+                    mot = mot.toLowerCase();  minuscule
+                    char[] mot_array = mot.toCharArray();               
+                    if (!motsVides.contains(mot) && mot.length() > 1)              // Vérifie que le mot n'est pas vide
                         freq.put(mot, freq.getOrDefault(mot, 0) + 1);  // Incrémente la fréquence du mot
                     }
                 }
             }
         }
 
-        return freq;
-    }
-    
+     
+
+     
+                                                                  // 
     public void ecrireCSV(String nomFichier) throws IOException {  // Génère un fichier CSV avec les mots et leur fréquence
         try (FileWriter writer = new FileWriter(nomFichier)) {
             writer.append("MOT");
             writer.append(";");
-            writer.append("FREQUENCE");
-            writer.append("\n");
+            writer.append("FREQU
+
             
             Map<String, Integer> freq = calculerFrequences();
             for (Map.Entry<String, Integer> entry : freq.entrySet()) { // Parcourt la Map
@@ -71,6 +73,5 @@ public class Analyse {
                 writer.append("\n");
             }
         }
-    }
-}
+ 
 
