@@ -1,68 +1,76 @@
 package com.uwu;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class Analyse {
-    private static final Logger logger = LogManager.getLogger(Analyse.class);
-
-    public static final List<String> motsVides = new ArrayList<String>(Arrays.asList("a", "b"));
-
-    String filePath;
+    
+    ArrayList<String> motsVides = new ArrayList<String>();
+    private String filePath;
 
     public Analyse(String filePath) {
         this.filePath = filePath;
-    }
-
-    public String readFile() throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(this.filePath));
-        String ligne;
-        StringBuilder sb = new StringBuilder();
-        while ((ligne = br.readLine()) != null) {
-            sb.append(ligne).append(" ");
-        }
-        br.close();
-
-        return sb.toString();
-    }
-
-    public Map<String, Integer> calculerFrequences() {
-
-        String text;
         try {
-            text = this.readFile();
+            this.lire_mot_vides();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return null;
         }
-        // Diviser le texte en mots et compter leur fréquence
+    }
+
+    public void lire_mot_vides() throws IOException {
+        InputStream is = getClass().getClassLoader().getResourceAsStream("mot_vide.txt");
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        String line;
+        while ((line = br.readLine()) != null) {
+            motsVides.add(line);
+        }
+    }
+
+
+    public Map<String, Integer> calculerFrequences() throws IOException { // Renvoie une Map avec les mots et leur fréquence
         Map<String, Integer> freq = new HashMap<>();
-        String[] mots = text.split("\\W+");
-        for (String mot : mots) {
-            if (!motsVides.contains(mot)) {
-                freq.put(mot, freq.getOrDefault(mot, 0) + 1);
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) { // Ouvre le fichier
+            String ligne;
+            while ((ligne = br.readLine()) != null) {           // Lit le fichier ligne par ligne
+                String[] mots = ligne.split("\\W+");      // Sépare la ligne en mots
+                for (String mot : mots) {
+                    mot = mot.toLowerCase();                   // Met le mot en minuscule
+                    if (!motsVides.contains(mot) && mot.length() > 1) {             // Vérifie que le mot n'est pas vide
+                        freq.put(mot, freq.getOrDefault(mot, 0) + 1);  // Incrémente la fréquence du mot
+                    }
+                }
             }
         }
 
-        // Convertir la carte de fréquence en liste triée par ordre décroissant de fréquence
-        List<Map.Entry<String, Integer>> listeFreq = new ArrayList<>(freq.entrySet());
-        listeFreq.sort((a, b) -> b.getValue().compareTo(a.getValue()));
-
-        // reconverti la liste en map
-        Map<String, Integer> map = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : listeFreq) {
-            map.put(entry.getKey(), entry.getValue());
+        return freq;
+    }
+    
+    public void ecrireCSV(String nomFichier) throws IOException {  // Génère un fichier CSV avec les mots et leur fréquence
+        try (FileWriter writer = new FileWriter(nomFichier)) {
+            writer.append("MOT");
+            writer.append(";");
+            writer.append("FREQUENCE");
+            writer.append("\n");
+            
+            Map<String, Integer> freq = calculerFrequences();
+            for (Map.Entry<String, Integer> entry : freq.entrySet()) { // Parcourt la Map
+                writer.append(entry.getKey());
+                writer.append(";");
+                writer.append(entry.getValue().toString());
+                writer.append("\n");
+            }
         }
-
-        return map;
     }
 }
 
