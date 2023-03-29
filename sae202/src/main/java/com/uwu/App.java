@@ -57,7 +57,6 @@ public class App {
         for (Map.Entry<String, Integer> entry : listeFreq.entrySet()) {
             System.out.println(entry.getKey() + " : " + entry.getValue());
         }
-
         
     }
 }
