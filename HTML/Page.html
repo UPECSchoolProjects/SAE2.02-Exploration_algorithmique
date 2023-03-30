@@ -54,180 +54,100 @@
 
         <!-- Automatic Slideshow Images -->
         <div class="mySlides w3-display-container w3-center">
-            <h3>UwU</h3>
+            <h1>Nuage de mot:</h1>
+            <div id="container"></div>
         </div>
 
         <!-- The Band Section -->
         <div class="w3-container w3-content w3-center w3-padding-64" style="max-width:800px" id="band">
-            <h2 class="w3-wide">THE BAND</h2>
-            <div id="container"></div>
-            <p class="w3-opacity"><i>We love music</i></p>
-            <p class="w3-justify">We have created a fictional band website. Lorem ipsum dolor sit amet, consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum consectetur
-                adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <h2 class="w3-wide">Projet</h2>
+            <p class="w3-justify">Objectif : Dans quelle mesure les textes d’un même auteur, ou d’une même époque,
+                obéissent-ils à un déterminisme ? </br>
+                La problématique est, ici, d’analyser plusieurs textes du même auteur, ou de la même décennie, et
+                de</br>
+                montrer les points communs et les différences dans le vocabulaire utilisé (qui s’expliquent
+                peut-être</br>
+                en fonction du genre, de l’auteur, du sujet, etc.)</br>
+                Il est conseillé de choisir 3 ou 4 textes longs (romans, etc.) ou une cinquantaine de textes courts</br>
+                (poèmes, articles de presse, par exemple).</br>
+            <ul>À cette fin, il faudra donc représenter :
+                <li>Un nuage de mots par texte analysé ;</li>
+                <li>Un nuage de mots commun, permettant de visualiser les mots communs aux textes.</li>
+            </ul>
+            </p>
             <div class="w3-row w3-padding-32">
-                <div class="w3-third">
-                    <p>Name</p>
-                    <img src="/w3images/bandmember.jpg" class="w3-round w3-margin-bottom" alt="Random Name"
-                        style="width:60%">
-                </div>
-                <div class="w3-third">
-                    <p>Name</p>
-                    <img src="/w3images/bandmember.jpg" class="w3-round w3-margin-bottom" alt="Random Name"
-                        style="width:60%">
-                </div>
-                <div class="w3-third">
-                    <p>Name</p>
-                    <img src="/w3images/bandmember.jpg" class="w3-round" alt="Random Name" style="width:60%">
-                </div>
             </div>
         </div>
 
         <!-- The Tour Section -->
         <div class="w3-black" id="tour">
             <div class="w3-container w3-content w3-padding-64" style="max-width:800px">
-                <h2 class="w3-wide w3-center">TOUR DATES</h2>
-                <p class="w3-opacity w3-center"><i>Remember to book your tickets!</i></p><br>
-
-                <ul class="w3-ul w3-border w3-white w3-text-grey">
-                    <li class="w3-padding">September <span class="w3-tag w3-red w3-margin-left">Sold out</span></li>
-                    <li class="w3-padding">October <span class="w3-tag w3-red w3-margin-left">Sold out</span></li>
-                    <li class="w3-padding">November <span class="w3-badge w3-right w3-margin-right">3</span></li>
-                </ul>
-
+                <h2 class="w3-wide w3-center">Les fonctionnalité :</h2>
+                <p class="w3-wide w3-center">Notre programme prend prends UN fichier pdf ou HTML et va le convertir en
+                    fichier txt.</br>
+                    Puis, après cela nous allons analyser tout les mot contenu dans le fichier nouvellement crée, le
+                    résultat sera enregistré dans un fichier csv </br>
+                    avec trois colonnes : le mot, sa fréquence et son nombre d'occurence.</br>
+                    Ensuite, nous allons pouvoir récuperer ce csv grâce à un serveur en javascript et l'afficher sous la
+                    forme d'un nuage de mots.</br>
+                </p>
                 <div class="w3-row-padding w3-padding-32" style="margin:0 -16px">
-                    <div class="w3-third w3-margin-bottom">
-                        <img src="/w3images/newyork.jpg" alt="New York" style="width:100%" class="w3-hover-opacity">
-                        <div class="w3-container w3-white">
-                            <p><b>New York</b></p>
-                            <p class="w3-opacity">Fri 27 Nov 2016</p>
-                            <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                            <button class="w3-button w3-black w3-margin-bottom"
-                                onclick="document.getElementById('ticketModal').style.display='block'">Buy
-                                Tickets</button>
-                        </div>
-                    </div>
-                    <div class="w3-third w3-margin-bottom">
-                        <img src="/w3images/paris.jpg" alt="Paris" style="width:100%" class="w3-hover-opacity">
-                        <div class="w3-container w3-white">
-                            <p><b>Paris</b></p>
-                            <p class="w3-opacity">Sat 28 Nov 2016</p>
-                            <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                            <button class="w3-button w3-black w3-margin-bottom"
-                                onclick="document.getElementById('ticketModal').style.display='block'">Buy
-                                Tickets</button>
-                        </div>
-                    </div>
-                    <div class="w3-third w3-margin-bottom">
-                        <img src="/w3images/sanfran.jpg" alt="San Francisco" style="width:100%"
-                            class="w3-hover-opacity">
-                        <div class="w3-container w3-white">
-                            <p><b>San Francisco</b></p>
-                            <p class="w3-opacity">Sun 29 Nov 2016</p>
-                            <p>Praesent tincidunt sed tellus ut rutrum sed vitae justo.</p>
-                            <button class="w3-button w3-black w3-margin-bottom"
-                                onclick="document.getElementById('ticketModal').style.display='block'">Buy
-                                Tickets</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Ticket Modal -->
-        <div id="ticketModal" class="w3-modal">
-            <div class="w3-modal-content w3-animate-top w3-card-4">
-                <header class="w3-container w3-teal w3-center w3-padding-32">
-                    <span onclick="document.getElementById('ticketModal').style.display='none'"
-                        class="w3-button w3-teal w3-xlarge w3-display-topright">×</span>
-                    <h2 class="w3-wide"><i class="fa fa-suitcase w3-margin-right"></i>Tickets</h2>
-                </header>
-                <div class="w3-container">
-                    <p><label><i class="fa fa-shopping-cart"></i> Tickets, $15 per person</label></p>
-                    <input class="w3-input w3-border" type="text" placeholder="How many?">
-                    <p><label><i class="fa fa-user"></i> Send To</label></p>
-                    <input class="w3-input w3-border" type="text" placeholder="Enter email">
-                    <button class="w3-button w3-block w3-teal w3-padding-16 w3-section w3-right">PAY <i
-                            class="fa fa-check"></i></button>
-                    <button class="w3-button w3-red w3-section"
-                        onclick="document.getElementById('ticketModal').style.display='none'">Close <i
-                            class="fa fa-remove"></i></button>
-                    <p class="w3-right">Need <a href="#" class="w3-text-blue">help?</a></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- The Contact Section -->
-        <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
-            <h2 class="w3-wide w3-center">L'équipe</h2>
-            <div class="w3-row w3-padding-32">
-                <div class="w3-col m6 w3-large w3-margin-bottom">
-                    <i style="width:30px"></i> Maxime<br>
-                    <i style="width:30px"></i> Maxence<br>
-                    <i style="width:30px"> </i> Antoine<br>
-                </div>
-                <div class="w3-col m6">
-                    <form action="/action_page.php" target="_blank">
-                        <div class="w3-row-padding" style="margin:0 -16px 8px -16px">
-                            <div class="w3-half">
-                                <p>Salut c'est moi tchoupi</p>
-                            </div>
-                            <div class="w3-half">
-                                <p>Salut c'est moi tchoupi</p>
-                            </div>
-                        </div>
-                        <p>Salut c'est moi tchoupi</p>
-                    </form>
-                </div>
-            </div>
+    <!-- The Contact Section -->
+    <div class="w3-container w3-content w3-padding-64" style="max-width:800px" id="contact">
+        <h2 class="w3-wide w3-center">L'équipe</h2>
+        <div class="w3-col m6 w3-large w3-margin-left w3-margin-bottoms">
+            <p>
+                Maxime : <i>Le Mec FOOOOORRRRRTTTTT</i> <br>
+                Maxence: <i>Le Gars UwU qui AnaLysE</i><br>
+                Antoine: <i>Tkt </i><br>
+            </p>
         </div>
 
         <!-- End Page Content -->
-    </div>
-    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
-    <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
-    <script type="text/javascript" src="./script.js"></script>
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
+        <script type="text/javascript" src="./script.js"></script>
 
-    <script>
-        // Automatic Slideshow - change image every 4 seconds
-        var myIndex = 0;
-        carousel();
+        <script>
+            // Automatic Slideshow - change image every 4 seconds
+            var myIndex = 0;
+            carousel();
 
-        function carousel() {
-            var i;
-            var x = document.getElementsByClassName("mySlides");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
+            function carousel() {
+                var i;
+                var x = document.getElementsByClassName("mySlides");
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                myIndex++;
+                if (myIndex > x.length) { myIndex = 1 }
+                x[myIndex - 1].style.display = "block";
+                setTimeout(carousel, 4000);
             }
-            myIndex++;
-            if (myIndex > x.length) { myIndex = 1 }
-            x[myIndex - 1].style.display = "block";
-            setTimeout(carousel, 4000);
-        }
 
-        // Used to toggle the menu on small screens when clicking on the menu button
-        function myFunction() {
-            var x = document.getElementById("navDemo");
-            if (x.className.indexOf("w3-show") == -1) {
-                x.className += " w3-show";
-            } else {
-                x.className = x.className.replace(" w3-show", "");
+            // Used to toggle the menu on small screens when clicking on the menu button
+            function myFunction() {
+                var x = document.getElementById("navDemo");
+                if (x.className.indexOf("w3-show") == -1) {
+                    x.className += " w3-show";
+                } else {
+                    x.className = x.className.replace(" w3-show", "");
+                }
             }
-        }
 
-        // When the user clicks anywhere outside of the modal, close it
-        var modal = document.getElementById('ticketModal');
-        window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            // When the user clicks anywhere outside of the modal, close it
+            var modal = document.getElementById('ticketModal');
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
             }
-        }
-    </script>
+        </script>
 
 </body>
 
