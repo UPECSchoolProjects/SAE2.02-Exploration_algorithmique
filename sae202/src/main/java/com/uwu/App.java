@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -33,37 +35,42 @@ public class App {
 
         Options options = new Options();
         Option filesOptions = Option.builder().option("f").longOpt("filename").hasArgs()
-                .valueSeparator(',').build();
+                .valueSeparator(',').desc("Liste de fichiers séparé par des virgules à traiter (incompatible avec -d)").build();
         options.addOption(filesOptions);
 
-        Option directory = Option.builder().option("d").longOpt("directory").hasArg().build();
+        Option directory = Option.builder().option("d").longOpt("directory").hasArg().desc("Répertoire à trairer (incompatible avec -f)").build();
         options.addOption(directory);
 
-        Option outDir = Option.builder().option("o").longOpt("outDir").hasArg().required().build();
+        Option outDir = Option.builder().option("o").longOpt("outDir").hasArg().required().desc("Répertoire de sortie des fichiers txt").build();
         options.addOption(outDir);
 
-        Option AnalysisOutDir = Option.builder().option("ad").longOpt("analysisOutDir").hasArg().build();
+        Option AnalysisOutDir =
+                Option.builder().option("ad").longOpt("analysisOutDir").hasArg().desc("Répertoire de sortie des fichiers csv d'analyse").build();
         options.addOption(AnalysisOutDir);
 
-        Option UnifiedFileNameOption = Option.builder().option("uf").longOpt("unifiedFileName").hasArg().build();
+        Option UnifiedFileNameOption =
+                Option.builder().option("uf").longOpt("unifiedFileName").hasArg().desc("Nom du fichier txt unifié (par défaut unified.txt)").build();
         options.addOption(UnifiedFileNameOption);
 
         // cette option permet de convertir tous les fichiers en un seul fichier
-        Option unifiedOption = Option.builder().option("u").longOpt("unified").build();
+        Option unifiedOption = Option.builder().option("u").longOpt("unified").desc("Unifie les fichiers traité dans un gros fichier txt").build();
         options.addOption(unifiedOption);
 
         // cette option permet de reconvertir les fichiers même s'ils ont déjà été convertis
-        Option rebuildOption = Option.builder().option("r").longOpt("rebuild").build();
+        Option rebuildOption = Option.builder().option("r").longOpt("rebuild").desc("Ecras les fichiers txt déjà présent dans le dossier de sortie").build();
         options.addOption(rebuildOption);
 
-        Option skipAnalysisOption = Option.builder().option("s").longOpt("skipAnalysis").build();
+        Option skipAnalysisOption = Option.builder().option("s").longOpt("skipAnalysis").desc("Passe l'analyse, convertis seulement les fichiers en txt").build();
         options.addOption(skipAnalysisOption);
 
-        Option verboseOption = Option.builder().option("v").longOpt("verbose").build();
+        Option verboseOption = Option.builder().option("v").longOpt("verbose").desc("Niveau de log debug").build();
         options.addOption(verboseOption);
 
-        Option extraVerbose = Option.builder().option("vv").longOpt("extraVerbose").build();
+        Option extraVerbose = Option.builder().option("vv").longOpt("extraVerbose").desc("Niveau de log Trace").build();
         options.addOption(extraVerbose);
+
+        Option motVidePath = Option.builder().option("m").longOpt("motVidePath").hasArg().desc("Fichier txt des mots vides").build();
+        options.addOption(motVidePath);
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
@@ -117,8 +124,8 @@ public class App {
             // read all files in the directory
             File file = new File(cmd.getOptionValue("directory"));
             if (!file.exists()) {
-                logger.error("Le répertoire spécifié n'existe pas");
-                System.exit(-1);
+                logger.debug("Le répertoire spécifié n'existe pas, on tente de le créer");
+                file.mkdirs();
             }
             if (!file.isDirectory()) {
                 logger.error("Le chemin spécifié n'est pas un répertoire");
@@ -143,9 +150,11 @@ public class App {
             IConverter converter = ConversionFactory.getConverter(path, file, "",
                     outDirFile.getAbsolutePath() + File.separator);
             String filenameWithoutExtension = file.substring(0, file.lastIndexOf("."));
-            if (!cmd.hasOption("r") && new File(outDirFile.getAbsolutePath() + File.separator
-                    + filenameWithoutExtension + ".txt").exists()) {
+            File convertedFilePath = new File(outDirFile.getAbsolutePath() + File.separator
+                    + filenameWithoutExtension + ".txt");
+            if (!cmd.hasOption("r") && convertedFilePath.exists()) {
                 logger.info("Le fichier " + file + " a déjà été converti");
+                convertedFiles.add(convertedFilePath);
                 continue;
             }
             try {
@@ -153,59 +162,74 @@ public class App {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+            logger.trace("Liste des fichiers :");
+            for (File f : convertedFiles) {
+                logger.trace(getRelativePath(f.getAbsolutePath()));
+            }
 
             if (cmd.hasOption("s")) {
                 logger.info("Analyse des fichiers ignorée");
                 System.exit(0);
             }
-            String analysisOutDir = cmd.hasOption("ad") ? cmd.getOptionValue("ad") : outDirFile.getAbsolutePath();
-            if(!analysisOutDir.endsWith(File.separator)) {
+            String analysisOutDir =
+                    cmd.hasOption("ad") ? cmd.getOptionValue("ad") : outDirFile.getAbsolutePath();
+            if (!analysisOutDir.endsWith(File.separator)) {
                 analysisOutDir += File.separator;
             }
 
             // create dir if it doesn't exist
             File analysisDir = new File(analysisOutDir);
-            if(!analysisDir.isDirectory()) {
+            if (!analysisDir.exists()) {
+                logger.debug("Le répertoire d'analyse spécifié ("+ getRelativePath(analysisDir.getAbsolutePath()) +") n'existe pas, il sera créé");
+                analysisDir.mkdirs();
+            }
+            if (!analysisDir.isDirectory()) {
                 logger.error("Le chemin de sortie d'analyse spécifié n'est pas un répertoire !");
                 System.exit(-1);
             }
-            if (!analysisDir.exists()) {
-                analysisDir.mkdir();
+
+            File motVideFile = cmd.hasOption("m") ? new File(cmd.getOptionValue("m")) : null;
+            if (motVideFile != null && !motVideFile.exists()) {
+                logger.warn("Le fichier de mots vides spécifié n'existe pas ! (" + getRelativePath(motVideFile.getAbsolutePath()) + ")");
             }
 
             if (unified) {
                 File unifiedFile = null;
+                String UnifiedFileName = cmd.hasOption("uf") ? cmd.getOptionValue("uf") : "unified";
+                UnifiedFileName = UnifiedFileName.replaceAll(".txt", "");
                 try {
-                    String UnifiedFileName = cmd.hasOption("uf") ? cmd.getOptionValue("uf") : "unified";
-                    UnifiedFileName = UnifiedFileName.replaceAll(".txt", "");
-                    unifiedFile =
-                            unifyFiles(convertedFiles, outDirFile.getAbsolutePath(), UnifiedFileName);
+                    unifiedFile = unifyFiles(convertedFiles, outDirFile.getAbsolutePath(),
+                            UnifiedFileName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 if (unifiedFile != null) {
-                    logger.info("Fichier unifié créé : " + unifiedFile.getAbsolutePath());
+                    logger.info("Fichier unifié créé : " + getRelativePath(unifiedFile.getAbsolutePath()));
                 }
 
                 logger.info("Analyse du fichier unifié...");
 
-                Analyse analyseur = new Analyse(unifiedFile.getAbsolutePath());
+                Analyse analyseur = new Analyse(unifiedFile.getAbsolutePath(), null);
+                File csvFile = null;
                 try {
-                    analyseur.ecrireCSV(analysisOutDir + "unified.csv");
+                    csvFile = new File(analysisOutDir + UnifiedFileName + ".csv");
+                    analyseur.ecrireCSV(csvFile.getAbsolutePath());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 logger.info("Analyse terminée");
-                logger.info("Fichier CSV créé : " + analysisOutDir + "unified.csv");
+                logger.info("Fichier CSV créé : " + getRelativePath(csvFile.getAbsolutePath()));
             } else {
                 int nbFile = convertedFiles.size();
                 int compteur = 0;
                 logger.info("Analyse de " + nbFile + " fichier(s)...");
                 for (File f : convertedFiles) {
 
-                    Analyse analyseur = new Analyse(f.getAbsolutePath());
+                    Analyse analyseur = new Analyse(f.getAbsolutePath(), null);
 
                     String filenameWithoutExt =
                             f.getName().substring(0, f.getName().lastIndexOf("."));
@@ -217,13 +241,13 @@ public class App {
                     }
                     logger.info("Analyse de " + f.getName() + " terminée (" + compteur + "/"
                             + nbFile + ")");
-                    logger.info("Fichier CSV créé : " + analysisOutDir + filenameWithoutExt + ".csv");
+                    logger.info(
+                            "Fichier CSV créé : " + getRelativePath(analysisOutDir + filenameWithoutExt + ".csv"));
                     compteur++;
                 }
 
                 logger.info("Analyse terminée");
             }
-        }
     }
 
     public static File unifyFiles(ArrayList<File> files, String outDir, String filename)
@@ -268,5 +292,13 @@ public class App {
             }
         }
         return files.toArray(new String[files.size()]);
+    }
+
+    public static String getRelativePath(String path) {
+        // get cli directory
+        Path currentRelativePath = Paths.get("").toAbsolutePath();
+        Path param = Paths.get(path).toAbsolutePath();
+        Path relativePath = currentRelativePath.relativize(param);
+        return relativePath.toString();
     }
 }

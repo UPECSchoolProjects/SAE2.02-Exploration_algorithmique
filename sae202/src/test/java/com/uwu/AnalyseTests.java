@@ -16,7 +16,7 @@ public class AnalyseTests {
 
     @Test
     public void verifyAnalyse() {
-        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt");
+        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt", null);
 
         Map<String, AnalyseMot> map;
         try {

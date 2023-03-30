@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 public class PdfConverter implements IConverter {
 
-    private static final Logger logger = LogManager.getLogger(HTMLConverter.class);
+    private static final Logger logger = LogManager.getLogger(PdfConverter.class);
 
     private String fileName;
     private String fileNameWithoutExtension;
@@ -36,8 +36,7 @@ public class PdfConverter implements IConverter {
     @Override
     public File convert() {
         try {
-            logger.info("Converting " + this.fileName + " to " + this.fileNameWithoutExtension
-                    + ".txt");
+            logger.info("Convertion de " + this.fileName + " en " + this.fileNameWithoutExtension + ".txt");
             PDDocument document = PDDocument.load(new File(fileURL));
             BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputURL));
 

@@ -2,7 +2,7 @@ package com.uwu;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Analyse {
 
-    private static final Logger logger = LogManager.getLogger(App.class);
+    private static final Logger logger = LogManager.getLogger(Analyse.class);
 
     static private java.util.Map<String, String> exceptedMap = java.util.Map.ofEntries(java.util.Map.entry("é", "e"),
             java.util.Map.entry("è", "e"),
@@ -34,10 +34,12 @@ public class Analyse {
     static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’]");
     ArrayList<String> motsVides = new ArrayList<String>();
     private String filePath;
+    private String motVidePath;
 
 
-    public Analyse(String filePath){
+    public Analyse(String filePath, String motVidePath){
         this.filePath = filePath;
+        this.motVidePath = motVidePath == null ? "mot_vide.txt" : motVidePath;
         File file = new File(filePath);
         if (!file.exists()) {
             logger.error("Le fichier " + filePath + " est introuvable");
@@ -62,20 +64,27 @@ public class Analyse {
 
 
     public void lire_mot_vides() {
-        File file = new File("mot_vide.txt");
+        File file = new File(this.motVidePath);
         if (!file.exists()) {
-            logger.error("Le fichier mot_vide.txt est introuvable");
+            logger.error("Le fichier "+ file.getAbsolutePath() + " est introuvable");
+            return;
         }
     
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("mot_vide.txt")){ 
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+        try { 
+            InputStream ips = new FileInputStream(file);
+            InputStreamReader ipsr = new InputStreamReader(ips);
+            BufferedReader br = new BufferedReader(ipsr);
             String line;
             while ((line = br.readLine()) != null) {
                 motsVides.add(line);
             }
+
+            br.close();
+
+            logger.info("Le fichier " + file.getAbsolutePath() + " a été lu avec succès ("
+                    + motsVides.size() + " mots)");
         } catch (IOException e) { 
-            logger.error("Erreur lors de la lecture du fichier mot_vide.txt.");
+            logger.error("Erreur lors de la lecture du fichier " + file.getAbsolutePath());
             logger.debug(e.getStackTrace());
         }
     }
