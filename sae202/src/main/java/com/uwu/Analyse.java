@@ -1,6 +1,8 @@
 package com.uwu;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,45 +20,95 @@ public class Analyse {
 
     private static final Logger logger = LogManager.getLogger(App.class);
 
-    static private java.util.Map<String, String> exceptedMap =
-            java.util.Map.ofEntries(java.util.Map.entry("é", "e"), java.util.Map.entry("è", "e"),
-                    java.util.Map.entry("ê", "e"), java.util.Map.entry("à", "a"),
-                    java.util.Map.entry("â", "a"), java.util.Map.entry("î", "i"),
-                    java.util.Map.entry("ï", "i"), java.util.Map.entry("ô", "o"),
-                    java.util.Map.entry("û", "u"), java.util.Map.entry("ù", "u"),
-                    java.util.Map.entry("ç", "c"), java.util.Map.entry("œ", "oe"),
-                    java.util.Map.entry("æ", "ae"), java.util.Map.entry("ë", "e"),
-                    java.util.Map.entry("ü", "u"), java.util.Map.entry("ÿ", "y"),
-                    java.util.Map.entry("Æ", "Ae"), java.util.Map.entry("Ø", "oe"),
-                    java.util.Map.entry("Å", "Aa"), java.util.Map.entry("Þ", "th"),
-                    java.util.Map.entry("ß", "ss")
-                    );
+    static private java.util.Map<String, String> exceptedMap = java.util.Map.ofEntries(java.util.Map.entry("é", "e"),
+            java.util.Map.entry("è", "e"),
+            java.util.Map.entry("ê", "e"), java.util.Map.entry("à", "a"),
+            java.util.Map.entry("â", "a"), java.util.Map.entry("î", "i"),
+            java.util.Map.entry("ï", "i"), java.util.Map.entry("ô", "o"),
+            java.util.Map.entry("û", "u"), java.util.Map.entry("ù", "u"),
+            java.util.Map.entry("ç", "c"), java.util.Map.entry("œ", "oe"),
+            java.util.Map.entry("æ", "ae"), java.util.Map.entry("ë", "e"),
+            java.util.Map.entry("ü", "u"), java.util.Map.entry("ÿ", "y"),
+            java.util.Map.entry("Æ", "Ae"), java.util.Map.entry("Ø", "oe"),
+            java.util.Map.entry("Å", "Aa"), java.util.Map.entry("Þ", "th"),
+            java.util.Map.entry("ß", "ss"));
     static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’]");
     ArrayList<String> motsVides = new ArrayList<String>();
     private String filePath;
 
-    public Analyse(String filePath) {
+
+    public Analyse(String filePath){
         this.filePath = filePath;
+        File file = new File(filePath);
+        if (!file.exists()) {
+            logger.error("Le fichier " + filePath + " est introuvable");
+        }
         try {
             this.lire_mot_vides();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
-    public void lire_mot_vides() throws IOException {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("mot_vide.txt");
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
-        String line;
-        while ((line = br.readLine()) != null) {
-            motsVides.add(line);
+
+    // public Analyse(String filePath) {
+    //     this.filePath = filePath;
+        
+    //     try {
+    //         this.lire_mot_vides();
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //         logger.error("Erreur lors de la lecture du fichier mot_vide.txt : " + e.getMessage());
+    //         System.exit(-1);
+    //     }
+    // }
+
+
+    public void lire_mot_vides() {
+        File file = new File("mot_vide.txt");
+        if (!file.exists()) {
+            logger.error("Le fichier mot_vide.txt est introuvable");
+        }
+    
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("mot_vide.txt")){ 
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                motsVides.add(line);
+            }
+        } catch (IOException e) { 
+            logger.error("Erreur lors de la lecture du fichier mot_vide.txt.");
+            logger.debug(e.getStackTrace());
         }
     }
+
+    // public void lire_mot_vides() throws IOException {
+    //     try (InputStream is = getClass().getClassLoader().getResourceAsStream("mot_vide.txt")){ 
+    //         InputStreamReader isr = new InputStreamReader(is);
+    //         BufferedReader br = new BufferedReader(isr);
+    //         String line;
+    //         while ((line = br.readLine()) != null) {
+    //             motsVides.add(line);
+    //         }
+    //     } catch (IOException e) { 
+    //         logger.error("Erreur lors de la lecture du fichier mot_vide.txt : " + e.getMessage());
+    //         throw e;
+    //     }
+    // }
+    
+
+    // InputStream is =
+    // getClass().getClassLoader().getResourceAsStream("mot_vide.txt");
+    // InputStreamReader isr = new InputStreamReader(is);
+    // BufferedReader br = new BufferedReader(isr);
+    // String line;
+    // while ((line = br.readLine()) != null) {
+    // motsVides.add(line);
+    // }
+    // }
 
     public Map<String, AnalyseMot> calculerFrequences() throws IOException { // Renvoie une Map avec
-                                                                          // les mots et leur
-                                                                          // fréquence
+                                                                             // les mots et leur
+                                                                             // fréquence
         Map<String, String> motsSansAccent = new HashMap<String, String>();
         int nbMot = 0;
         Map<String, Integer> compteur = new HashMap<>();
@@ -89,10 +141,10 @@ public class Analyse {
                     motsSansAccent.put(mot, motDeBase);
                     logger.trace("mot: " + mot + " - length: " + mot.length());
                     if ((!motsVides.contains(mot)) && mot.length() > 1) { // Vérifie que le mot n'est
-                                                                       // pas vide
-                        nbMot++;                                        
+                                                                          // pas vide
+                        nbMot++;
                         compteur.put(mot, compteur.getOrDefault(mot, 0) + 1); // Incrémente la fréquence du
-                                                                      // mot
+                        // mot
                     }
                 }
             }
@@ -102,9 +154,11 @@ public class Analyse {
         Map<String, AnalyseMot> analyseMap = new HashMap<>();
         for (Map.Entry<String, Integer> entry : compteur.entrySet()) { // Parcourt la Map
             if (entry.getValue() > 1) { // Vérifie que le mot apparait plus d'une fois
-                AnalyseMot analyseMot = new AnalyseMot(motsSansAccent.get(entry.getKey()),entry.getValue()/((double)nbMot), entry.getValue());
+                AnalyseMot analyseMot = new AnalyseMot(motsSansAccent.get(entry.getKey()),
+                        entry.getValue() / ((double) nbMot), entry.getValue());
                 analyseMap.put(entry.getKey(), analyseMot); // Ajoute le mot et sa fréquence
-                logger.trace("mot: " + entry.getKey() + " - occurence: " + entry.getValue() + " - freq: " + entry.getValue()/((double)nbMot));
+                logger.trace("mot: " + entry.getKey() + " - occurence: " + entry.getValue() + " - freq: "
+                        + entry.getValue() / ((double) nbMot));
             }
         }
         return analyseMap;
