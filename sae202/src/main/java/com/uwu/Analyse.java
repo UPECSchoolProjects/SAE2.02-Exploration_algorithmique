@@ -43,9 +43,9 @@ public class Analyse {
         if (!file.exists()) {
             logger.error("Le fichier " + filePath + " est introuvable");
         }
-        try {
+        
             this.lire_mot_vides();
-        }
+        
     }
 
 
