@@ -8,7 +8,12 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class PdfConverter implements IConverter {
+
+    private static final Logger logger = LogManager.getLogger(HTMLConverter.class);
 
     private String fileName;
     private String fileNameWithoutExtension;
@@ -31,6 +36,8 @@ public class PdfConverter implements IConverter {
     @Override
     public File convert() {
         try {
+            logger.info("Converting " + this.fileName + " to " + this.fileNameWithoutExtension
+                    + ".txt");
             PDDocument document = PDDocument.load(new File(fileURL));
             BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputURL));
 

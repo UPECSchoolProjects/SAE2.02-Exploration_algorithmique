@@ -8,6 +8,8 @@ public class ConversionFactory {
                 return new PdfConverter(path, fileName, outputPath);
             case "html":
                 return new HTMLConverter(path, fileName, outputPath, classText);
+            case "txt":
+                return null;
             default:
                 throw new UnsupportedOperationException("Unsupported file type");
         }
