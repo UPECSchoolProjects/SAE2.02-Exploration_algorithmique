@@ -1,4 +1,0 @@
-<span></span>
-<h3>    <span></span></h3>
-<div></div>
-<nav class="nav"><h3>    <span></span></h3><div></div></nav>
