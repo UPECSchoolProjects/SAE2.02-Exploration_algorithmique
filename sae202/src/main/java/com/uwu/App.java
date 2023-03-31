@@ -147,6 +147,13 @@ public class App {
                 file = file.substring(file.lastIndexOf(File.separator) + 1);
             }
             logger.debug("Path : " + path + " File : " + file);
+
+            if(file.endsWith(".txt")) {
+                logger.info("Le fichier " + file + " est déjà un fichier txt");
+                convertedFiles.add(new File(path + file));
+                continue;
+            }
+
             IConverter converter = ConversionFactory.getConverter(path, file, "",
                     outDirFile.getAbsolutePath() + File.separator);
             String filenameWithoutExtension = file.substring(0, file.lastIndexOf("."));
@@ -155,6 +162,10 @@ public class App {
             if (!cmd.hasOption("r") && convertedFilePath.exists()) {
                 logger.info("Le fichier " + file + " a déjà été converti");
                 convertedFiles.add(convertedFilePath);
+                continue;
+            }
+            if(converter == null) {
+                logger.error("Le fichier " + file + " n'est pas un fichier supporté");
                 continue;
             }
             try {
