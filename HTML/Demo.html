@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>W3.CSS Template</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: "Lato", sans-serif
+        }
+
+        .mySlides {
+            display: none
+        }
+
+        #container {
+            width: 100%;
+            margin: 0 auto;
+            height: 80vh;
+        }
+
+        #title {
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        #controlContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #controlContainer>* {
+            margin: 10px;
+        }
+
+        label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-right: 1em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="w3-top">
+        <div class="w3-bar w3-black w3-card">
+            <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                    class="fa fa-bars"></i></a>
+            <a href="./index.html#" class="w3-bar-item w3-button w3-padding-large">HOME</a>
+            <a href="./index.html#band" class="w3-bar-item w3-button w3-padding-large w3-hide-small">PROJET</a>
+            <a href="./index.html#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">FONCTIONNALITÉ</a>
+            <a href="./index.html#contact" class="w3-bar-item w3-button w3-padding-large w3-hide-small">MEMBRE</a>
+            <a href="./Demo.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">DEMO</a>
+            <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right"><i
+                    class="fa fa-search"></i></a>
+        </div>
+    </div>
+
+    <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+    <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+        <a href="./index.html#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">PROJET</a>
+        <a href="./index.html#tour" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">FONCTIONNALITÉ</a>
+        <a href="./index.html#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MEMBRE</a>
+        <a href="./Demo.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">DEMO</a>
+    </div>
+
+    <!-- Page content -->
+    <div class="w3-content" style="max-width:80%;margin-top:46px">
+        <center id="controlContainer">
+            <h1 id="title">DEMONSTRATION</h1>
+            <div>
+                <label for="selector">Selection du jeu de données :</label>
+                <select id="selector">
+                </select>
+            </div>
+            <div>
+                <label for="number">Nombre de mots à afficher :</label>
+                <input type="number" id="nbwords" value="15" min="1" max="1000" step="1">
+            </div>
+        </center>
+        </select>
+        <div id="container"></div>
+    </div>
+
+    <!-- End Page Content -->
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
+    <script type="text/javascript" src="./script.js"></script>
+
+    <script>
+        // Automatic Slideshow - change image every 4 seconds
+        var myIndex = 0;
+        carousel();
+
+        function carousel() {
+            var i;
+            var x = document.getElementsByClassName("mySlides");
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            myIndex++;
+            if (myIndex > x.length) { myIndex = 1 }
+            x[myIndex - 1].style.display = "block";
+            setTimeout(carousel, 4000);
+        }
+
+        // Used to toggle the menu on small screens when clicking on the menu button
+        function myFunction() {
+            var x = document.getElementById("navDemo");
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+            }
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        var modal = document.getElementById('ticketModal');
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
