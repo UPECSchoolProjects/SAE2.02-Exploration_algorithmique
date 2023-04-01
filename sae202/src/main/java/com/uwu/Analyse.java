@@ -144,9 +144,9 @@ public class Analyse {
 
                 String[] mots = ligne.split(" +"); // Sépare la ligne en mots
                 for (String mot : mots) {
-                    logger.debug("mot: " + mot);
+                    logger.trace("mot: " + mot);
                     String motRacine = mot.length() > 2 ? stemming.stemm(mot) : mot;
-                    logger.debug('[' + mot + "] -> [" + motRacine + ']');
+                    logger.trace('[' + mot + "] -> [" + motRacine + ']');
 
                     motRacine = motRacine.replaceAll("[^a-z-]", ""); // Supprime les caractères non alphabétiques
 
@@ -160,19 +160,15 @@ public class Analyse {
                         compteurMotDominantDansRacine.put(motRacine, map);
                     }
                     logger.trace("mot: " + motRacine + " - length: " + motRacine.length());
-                    logger.trace("ici");
                     if ((!motsVides.contains(motRacine)) && motRacine.length() > 1) { // Vérifie que le mot n'est
                                                                           // pas vide
                         nbMot++;
                         compteur.put(motRacine, compteur.getOrDefault(motRacine, 0) + 1); // Incrémente la fréquence du
                         // mot
                     }
-                    logger.trace("fin ici");
                 }
-                logger.trace("ou alors ici ?");
             }
         }
-        logger.trace("ici peut etre ?");
         logger.trace("freq: " + compteur);
         logger.debug("nbMot: " + nbMot);
         Map<String, AnalyseMot> analyseMap = new HashMap<>();

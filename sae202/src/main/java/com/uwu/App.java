@@ -301,7 +301,7 @@ public class App {
         ArrayList<String> files = new ArrayList<String>();
         for (final File fileEntry : folder.listFiles()) {
             if (!fileEntry.isDirectory()) {
-                System.out.println(fileEntry.getName());
+                logger.debug("Fichier trouvé : " + fileEntry.getName());
                 files.add(fileEntry.getName());
             }
         }
