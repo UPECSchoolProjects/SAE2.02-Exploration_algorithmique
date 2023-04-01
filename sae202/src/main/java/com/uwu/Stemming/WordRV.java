@@ -91,28 +91,32 @@ public class WordRV {
         this.RV_Start = wordLength;
     }
 
-    public boolean replaceSuffix(Region r, List<String> suffixes, String replacement) {
-
-        int searchIndex;
+    public int getSearchIndex(Region r) {
+        int index;
         switch (r) {
             case ALL:
-                searchIndex = 0;
+                index = 0;
                 break;
             case R1:
-                searchIndex = this.getR1_Start();
+                index = this.getR1_Start();
                 break;
             case R2:
-                searchIndex = this.getR2_Start();
+                index = this.getR2_Start();
                 break;
             case RV:
-                searchIndex = this.getRV_Start();
+                index = this.getRV_Start();
                 break;
             default:
-                searchIndex = 0;
+                index = 0;
                 break;
         }
+        // check if index is in word length
+        return index > wordLength ? wordLength : index;
+    }
 
-        String searchWord = word.substring(searchIndex);
+    public boolean replaceSuffix(Region r, List<String> suffixes, String replacement) {
+
+        String searchWord = word.substring(getSearchIndex(r));
         String longestSuffix = Stemming.getLongestSuffix(suffixes, searchWord);
         if (longestSuffix != null) {
             this.word = Stemming.replaceLast(word, longestSuffix, replacement);
@@ -171,26 +175,9 @@ public class WordRV {
 
     public boolean deleteIfPrecededBySuffix(Region r, List<String> suffixes, String replacement,
             List<Character> authorizedPrecedentLetter, boolean deleteIfnotPrecededByAuthorizedLetter, Region precedentLetterRegion) {
-        int searchIndex;
-        switch (r) {
-            case ALL:
-                searchIndex = 0;
-                break;
-            case R1:
-                searchIndex = this.getR1_Start();
-                break;
-            case R2:
-                searchIndex = this.getR2_Start();
-                break;
-            case RV:
-                searchIndex = this.getRV_Start();
-                break;
-            default:
-                searchIndex = 0;
-                break;
-        }
+        
 
-        String searchWord = word.substring(searchIndex);
+        String searchWord = word.substring(getSearchIndex(r));
         String longestSuffix = Stemming.getLongestSuffix(suffixes, searchWord);
         if (longestSuffix != null) {
             int index = searchWord.lastIndexOf(longestSuffix);
@@ -254,6 +241,9 @@ public class WordRV {
     }
 
     public int getRV_Start() {
+        if (this.RV_Start > this.wordLength) {
+            this.RV_Start = this.wordLength;
+        }
         return this.RV_Start;
     }
 
@@ -263,6 +253,9 @@ public class WordRV {
     }
 
     public int getR1_Start() {
+        if (this.R1_Start > this.wordLength) {
+            this.R1_Start = this.wordLength;
+        }
         return this.R1_Start;
     }
 
@@ -272,6 +265,9 @@ public class WordRV {
     }
 
     public int getR2_Start() {
+        if (this.R2_Start > this.wordLength) {
+            this.R2_Start = this.wordLength;
+        }
         return this.R2_Start;
     }
 
@@ -282,6 +278,9 @@ public class WordRV {
 
     public String getR1() {
         if (this.R1 == null) {
+            if (this.R1_Start > this.wordLength) {
+                this.R1_Start = this.wordLength;
+            }
             this.R1 = this.word.substring(this.R1_Start);
         }
         return this.R1;
@@ -289,6 +288,9 @@ public class WordRV {
 
     public String getR2() {
         if (this.R2 == null) {
+            if (this.R2_Start > this.wordLength) {
+                this.R2_Start = this.wordLength;
+            }
             this.R2 = this.word.substring(this.R2_Start);
         }
         return this.R2;
@@ -296,6 +298,9 @@ public class WordRV {
 
     public String getRV() {
         if (this.RV == null) {
+            if (this.RV_Start > this.wordLength) {
+                this.RV_Start = this.wordLength;
+            }
             this.RV = this.word.substring(this.RV_Start);
         }
         return this.RV;

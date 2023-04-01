@@ -21,6 +21,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import com.uwu.Conversion.ConversionFactory;
 import com.uwu.Conversion.IConverter;
+import com.uwu.Stemming.Stemming;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -205,6 +207,8 @@ public class App {
                 logger.warn("Le fichier de mots vides spécifié n'existe pas ! (" + getRelativePath(motVideFile.getAbsolutePath()) + ")");
             }
 
+            Stemming stemming = new Stemming();
+
             if (unified) {
                 File unifiedFile = null;
                 String UnifiedFileName = cmd.hasOption("uf") ? cmd.getOptionValue("uf") : "unified";
@@ -222,7 +226,7 @@ public class App {
 
                 logger.info("Analyse du fichier unifié...");
 
-                Analyse analyseur = new Analyse(unifiedFile.getAbsolutePath(), null);
+                Analyse analyseur = new Analyse(unifiedFile.getAbsolutePath(), null, stemming);
                 File csvFile = null;
                 try {
                     csvFile = new File(analysisOutDir + UnifiedFileName + ".csv");
@@ -239,7 +243,7 @@ public class App {
                 logger.info("Analyse de " + nbFile + " fichier(s)...");
                 for (File f : convertedFiles) {
 
-                    Analyse analyseur = new Analyse(f.getAbsolutePath(), null);
+                    Analyse analyseur = new Analyse(f.getAbsolutePath(), null, stemming);
 
                     String filenameWithoutExt =
                             f.getName().substring(0, f.getName().lastIndexOf("."));

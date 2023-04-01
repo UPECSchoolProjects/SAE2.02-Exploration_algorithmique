@@ -159,6 +159,7 @@ public class Stemming {
     }
 
     public String stemm(String word) {
+        word = word.toLowerCase();
         WordRV wordRV = new WordRV(word);
         wordRV.setWord(markNonVowels(wordRV.getWord()));
 

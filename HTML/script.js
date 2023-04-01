@@ -19,8 +19,9 @@ async function CSVToArray(strData, strDelimiter) {
         let obj = {};
         let currentline = lines[i].split(strDelimiter);
         obj["x"] = currentline[0];
-        obj["value"] = currentline[1];
-        obj["freq"] = currentline[2];
+        obj["racine"] = currentline[1];
+        obj["value"] = currentline[2];
+        obj["freq"] = currentline[3];
         arr.push(obj);
     }
     return arr;
@@ -56,7 +57,7 @@ async function drawChart(dataURL, nbwords) {
     // enable a color range
     //chart.colorRange(true);
     // set the color range length
-    chart.tooltip().format(`Le mot "{%x}" apparait {%freq}% des fois ({%value} fois)`);
+    chart.tooltip().format(`Le mot "{%x}" apparait {%freq}% des fois ({%value} fois), sa racine est {$racine}`);
 
     // display the word cloud chart
     chart.container("container");

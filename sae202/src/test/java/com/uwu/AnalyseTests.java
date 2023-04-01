@@ -6,17 +6,19 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.uwu.Stemming.Stemming;
+
 /**
  * Unit test for simple App.
  */
 public class AnalyseTests {
 
-    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot("pomme",0.5, 2)),
-            Map.entry("arbre", new AnalyseMot("arbre",0.5, 2)));
+    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot("pomme", 0.5, 2)),
+            Map.entry("arbre", new AnalyseMot("arbre", 0.5, 2)));
 
     @Test
     public void verifyAnalyse() {
-        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt", null);
+        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt", null, new Stemming());
 
         Map<String, AnalyseMot> map;
         try {
