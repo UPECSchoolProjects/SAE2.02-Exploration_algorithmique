@@ -32,78 +32,9 @@ public class App {
     private static final Logger logger = LogManager.getLogger(App.class);
 
     public static void main(String[] args) {
+        Options options = constructOptions();
 
-
-        Options options = new Options();
-        Option filesOptions = Option.builder().option("f").longOpt("filename").hasArgs()
-                .valueSeparator(',').desc("Liste de fichiers séparé par des virgules à traiter (incompatible avec -d)").build();
-        options.addOption(filesOptions);
-
-        Option directory = Option.builder().option("d").longOpt("directory").hasArg().desc("Répertoire à trairer (incompatible avec -f)").build();
-        options.addOption(directory);
-
-        Option outDir = Option.builder().option("o").longOpt("outDir").hasArg().required().desc("Répertoire de sortie des fichiers txt").build();
-        options.addOption(outDir);
-
-        Option AnalysisOutDir =
-                Option.builder().option("ad").longOpt("analysisOutDir").hasArg().desc("Répertoire de sortie des fichiers csv d'analyse").build();
-        options.addOption(AnalysisOutDir);
-
-        Option UnifiedFileNameOption =
-                Option.builder().option("uf").longOpt("unifiedFileName").hasArg().desc("Nom du fichier txt unifié (par défaut unified.txt)").build();
-        options.addOption(UnifiedFileNameOption);
-
-        // cette option permet de convertir tous les fichiers en un seul fichier
-        Option unifiedOption = Option.builder().option("u").longOpt("unified").desc("Unifie les fichiers traité dans un gros fichier txt").build();
-        options.addOption(unifiedOption);
-
-        // cette option permet de reconvertir les fichiers même s'ils ont déjà été convertis
-        Option rebuildOption = Option.builder().option("r").longOpt("rebuild").desc("Ecras les fichiers txt déjà présent dans le dossier de sortie").build();
-        options.addOption(rebuildOption);
-
-        Option skipAnalysisOption = Option.builder().option("s").longOpt("skipAnalysis").desc("Passe l'analyse, convertis seulement les fichiers en txt").build();
-        options.addOption(skipAnalysisOption);
-
-        Option verboseOption = Option.builder().option("v").longOpt("verbose").desc("Niveau de log debug").build();
-        options.addOption(verboseOption);
-
-        Option extraVerbose = Option.builder().option("vv").longOpt("extraVerbose").desc("Niveau de log Trace").build();
-        options.addOption(extraVerbose);
-
-        Option motVidePath = Option.builder().option("m").longOpt("motVidePath").hasArg().desc("Fichier txt des mots vides").build();
-        options.addOption(motVidePath);
-
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = null;
-        try {
-            cmd = parser.parse(options, args);
-
-            if (!cmd.hasOption("directory") && !cmd.hasOption("filename")) {
-                logger.info("Vous devez spécifier au moins un fichier ou un répertoire");
-                System.exit(-1);
-            }
-        } catch (ParseException e) {
-            // print help
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("myapp", "", options, "", true);
-            logger.info("Cette commande n'est pas valide : " + e.getMessage());
-            System.exit(-1);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
-        if (cmd.hasOption("verbose")) {
-            Logger logger = LogManager.getRootLogger();
-            Configurator.setAllLevels(logger.getName(), Level.getLevel("DEBUG"));
-            logger.info("Mode verbeux (DEBUG) activé");
-        }
-
-        if (cmd.hasOption("extraVerbose")) {
-            Logger logger = LogManager.getRootLogger();
-            Configurator.setAllLevels(logger.getName(), Level.getLevel("TRACE"));
-            logger.info("Mode extra-verbeux (TRACE) activé");
-        }
+        CommandLine cmd = commandParser(options, args);
 
         File outDirFile = new File(cmd.getOptionValue("outDir"));
         if (!outDirFile.exists()) {
@@ -264,6 +195,105 @@ public class App {
             }
     }
 
+    /**
+     * Renvoie un objet options avec toutes les options possibles
+     * utile pour le CLI
+     * @return Options possibles de la commande
+     */
+    public static Options constructOptions() {
+        
+        Options options = new Options();
+        Option filesOptions = Option.builder().option("f").longOpt("filename").hasArgs()
+                .valueSeparator(',').desc("Liste de fichiers séparé par des virgules à traiter (incompatible avec -d)").build();
+        options.addOption(filesOptions);
+
+        Option directory = Option.builder().option("d").longOpt("directory").hasArg().desc("Répertoire à trairer (incompatible avec -f)").build();
+        options.addOption(directory);
+
+        Option outDir = Option.builder().option("o").longOpt("outDir").hasArg().required().desc("Répertoire de sortie des fichiers txt").build();
+        options.addOption(outDir);
+
+        Option AnalysisOutDir =
+                Option.builder().option("ad").longOpt("analysisOutDir").hasArg().desc("Répertoire de sortie des fichiers csv d'analyse").build();
+        options.addOption(AnalysisOutDir);
+
+        Option UnifiedFileNameOption =
+                Option.builder().option("uf").longOpt("unifiedFileName").hasArg().desc("Nom du fichier txt unifié (par défaut unified.txt)").build();
+        options.addOption(UnifiedFileNameOption);
+
+        // cette option permet de convertir tous les fichiers en un seul fichier
+        Option unifiedOption = Option.builder().option("u").longOpt("unified").desc("Unifie les fichiers traité dans un gros fichier txt").build();
+        options.addOption(unifiedOption);
+
+        // cette option permet de reconvertir les fichiers même s'ils ont déjà été convertis
+        Option rebuildOption = Option.builder().option("r").longOpt("rebuild").desc("Ecras les fichiers txt déjà présent dans le dossier de sortie").build();
+        options.addOption(rebuildOption);
+
+        Option skipAnalysisOption = Option.builder().option("s").longOpt("skipAnalysis").desc("Passe l'analyse, convertis seulement les fichiers en txt").build();
+        options.addOption(skipAnalysisOption);
+
+        Option verboseOption = Option.builder().option("v").longOpt("verbose").desc("Niveau de log debug").build();
+        options.addOption(verboseOption);
+
+        Option extraVerbose = Option.builder().option("vv").longOpt("extraVerbose").desc("Niveau de log Trace").build();
+        options.addOption(extraVerbose);
+
+        Option motVidePath = Option.builder().option("m").longOpt("motVidePath").hasArg().desc("Fichier txt des mots vides").build();
+        options.addOption(motVidePath);
+
+        return options;
+    }
+
+    /**
+     * Parse les arguments de la commande en fonction des options
+     * @param options Options de la commande
+     * @param args args dans le main
+     * @return CommandLine contenant les arguments parsé de la commande
+     */
+    public static CommandLine commandParser(Options options, String[] args) {
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+
+            if (!cmd.hasOption("directory") && !cmd.hasOption("filename")) {
+                logger.info("Vous devez spécifier au moins un fichier ou un répertoire");
+                System.exit(-1);
+            }
+        } catch (ParseException e) {
+            // print help
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("myapp", "", options, "", true);
+            logger.info("Cette commande n'est pas valide : " + e.getMessage());
+            System.exit(-1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        if (cmd.hasOption("verbose")) {
+            Logger logger = LogManager.getRootLogger();
+            Configurator.setAllLevels(logger.getName(), Level.getLevel("DEBUG"));
+            logger.info("Mode verbeux (DEBUG) activé");
+        }
+
+        if (cmd.hasOption("extraVerbose")) {
+            Logger logger = LogManager.getRootLogger();
+            Configurator.setAllLevels(logger.getName(), Level.getLevel("TRACE"));
+            logger.info("Mode extra-verbeux (TRACE) activé");
+        }
+
+        return cmd;
+    }
+
+    /**
+     * prends une liste de fichier et les unifie dans un seul fichier .txt
+     * @param files liste de fichier à unifier
+     * @param outDir répertoire de sortie du fichier unifié
+     * @param filename nom du fichier unifié
+     * @return le fichier unifié (objet File)
+     * @throws IOException si le fichier n'a pas pu être créé
+     */
     public static File unifyFiles(ArrayList<File> files, String outDir, String filename)
             throws IOException {
         // read file
@@ -297,6 +327,11 @@ public class App {
         return file;
     }
 
+    /**
+     * Liste les fichiers d'un répertoire
+     * @param folder répertoire à lister
+     * @return String[] contenant les noms des fichiers
+     */
     public static String[] listFilesForFolder(final File folder) {
         ArrayList<String> files = new ArrayList<String>();
         for (final File fileEntry : folder.listFiles()) {
@@ -308,6 +343,11 @@ public class App {
         return files.toArray(new String[files.size()]);
     }
 
+    /**
+     * Récupère le chemin relatif d'un fichier par rapport au répertoire courant
+     * @param path chemin du fichier
+     * @return chemin relatif
+     */
     public static String getRelativePath(String path) {
         // get cli directory
         Path currentRelativePath = Paths.get("").toAbsolutePath();

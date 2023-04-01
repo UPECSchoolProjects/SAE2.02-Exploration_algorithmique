@@ -9,6 +9,8 @@ import com.uwu.Stemming.WordRV.Region;
 /**
  *  Cette classe détaille toutes les étapes de remplacement de l'algorithme de racinisation
  *  elle utilise l'interface IReplaceStep pour définir les étapes de remplacement
+ * 
+ *  à chaque étape (si j'ai pas oublié) j'ai mis un commentaire avec la phrase du cahier des charges
  *  
  *  @author Maxime LOTTO
  */
