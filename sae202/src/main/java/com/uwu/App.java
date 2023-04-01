@@ -21,7 +21,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import com.uwu.Conversion.ConversionFactory;
 import com.uwu.Conversion.IConverter;
-import com.uwu.Conversion.PdfConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
