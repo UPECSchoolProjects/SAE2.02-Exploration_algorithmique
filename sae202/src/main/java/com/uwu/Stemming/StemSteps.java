@@ -6,6 +6,12 @@ import java.util.List;
 
 import com.uwu.Stemming.WordRV.Region;
 
+/**
+ *  Cette classe détaille toutes les étapes de remplacement de l'algorithme de racinisation
+ *  elle utilise l'interface IReplaceStep pour définir les étapes de remplacement
+ *  
+ *  @author Maxime LOTTO
+ */
 public class StemSteps {
     /*
      * Cette classe aide à l'implementation de l'algorithme de racinisation donnée
@@ -16,6 +22,14 @@ public class StemSteps {
      * SAE2.02
      */
 
+    /**
+     * vérifie si le suffixe est précédé par une voyelle 
+     * utile pour l'étape 1 : // delete if in R1 and preceded by a non-vowel
+     * 
+     * @param word le mot complet
+     * @param suffix le suffixe à vérifier
+     * @return true si le suffixe est précédé par une voyelle
+     */
     public static boolean isPrecededByVowel(String word, String suffix) {
         int suffixIndex = word.lastIndexOf(suffix);
         if (suffixIndex == -1)

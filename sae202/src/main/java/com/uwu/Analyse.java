@@ -145,7 +145,7 @@ public class Analyse {
                 String[] mots = ligne.split(" +"); // Sépare la ligne en mots
                 for (String mot : mots) {
                     logger.trace("mot: " + mot);
-                    String motRacine = mot.length() > 2 ? stemming.stemm(mot) : mot;
+                    String motRacine = stemming.stemm(mot) ;
                     logger.trace('[' + mot + "] -> [" + motRacine + ']');
 
                     motRacine = motRacine.replaceAll("[^a-z-]", ""); // Supprime les caractères non alphabétiques
