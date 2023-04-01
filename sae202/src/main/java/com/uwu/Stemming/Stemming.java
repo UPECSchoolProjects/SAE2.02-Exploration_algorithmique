@@ -166,9 +166,40 @@ public class Stemming {
         wordRV.setR1_Start(find_R1(wordRV.getWord()));
         wordRV.setR2_Start(find_R2(wordRV.getWord(), wordRV.getR1_Start()));
 
+        String wordReferenceForStep3 = wordRV.getWord();
+
+        // step 1
         for (IReplaceStep replaceStep : StemSteps.step1) {
             replaceStep.replace(wordRV);
         }
+
+        // step 2
+        // Do step 2a if either no ending was removed by step 1, or if one of endings
+        // amment, emment, ment, ments was found.
+        if(wordRV.isDoStep2a()) {
+            wordReferenceForStep3 = wordRV.getWord();
+            StemSteps.step2a.replace(wordRV);
+
+            // Do step 2b if step 2a was done and removed an ending.
+            if(wordRV.isFoundStep2aSuffixes()) {
+                wordReferenceForStep3 = wordRV.getWord();
+                StemSteps.step2b.replace(wordRV);
+            }
+        }
+        // If the last step to be obeyed — either step 1, 2a or 2b — altered the word, do step 3
+        if(!wordReferenceForStep3.equals(wordRV.getWord())) {
+            StemSteps.step3.replace(wordRV);
+        } else {
+            // Alternatively, if the last step to be obeyed did not alter the word, do step 4
+            StemSteps.step4.replace(wordRV);
+        }
+
+        // Always do steps 5 and 6.
+        StemSteps.step5.replace(wordRV);
+        StemSteps.step6.replace(wordRV);
+
+        // step bonus
+        StemSteps.stepFinally.replace(wordRV);
 
         return wordRV.getWord();
     }

@@ -8,12 +8,13 @@ import com.uwu.Stemming.WordRV.Region;
 
 public class StemSteps {
     /*
-     * Cette classe aide à l'implementation de l'algorithme de racinisation donnée dans le cahier des
+     * Cette classe aide à l'implementation de l'algorithme de racinisation donnée
+     * dans le cahier des
      * charges.
      * 
-     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la SAE2.02
+     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+     * SAE2.02
      */
-
 
     public static boolean isPrecededByVowel(String word, String suffix) {
         int suffixIndex = word.lastIndexOf(suffix);
@@ -271,16 +272,15 @@ public class StemSteps {
                     String longestSuffix = Stemming.getLongestSuffix(suffixes, searchWord);
                     if (longestSuffix != null) {
                         int suffixIndex = word.getWord().lastIndexOf(longestSuffix);
-                        if (suffixIndex == -1)
-                            return;
-                        if (suffixIndex == 0)
-                            return;
+
                         int previousCharIndex = suffixIndex - 1;
-                        
-                        // check if in RV
-                        if (previousCharIndex < word.getRV_Start())
+                        if (previousCharIndex < 0)
                             return;
-                        
+
+                        // check if in RV
+                        if (!word.isInRegion(Region.RV, previousCharIndex))
+                            return;
+
                         // check if preceded by a vowel
                         char previousChar = word.getWord().charAt(previousCharIndex);
                         if (Stemming.isVowel(previousChar)) {
@@ -289,4 +289,209 @@ public class StemSteps {
                     }
                 }
             });
+
+    // Step2a
+    public static IReplaceStep step2a = new IReplaceStep() {
+        List<String> suffixes = Arrays.asList("îmes", "ît", "îtes", "i", "ie", "ies", "ir", "ira", "irai",
+                "iraIent", "irais", "irait", "iras", "irent", "irez", "iriez", "irions", "irons", "iront", "is",
+                "issaIent", "issais", "issait", "issant", "issante", "issantes", "issants", "isse",
+                "issentisses", "issez", "issiez", "issions", "issons", "it");
+
+        @Override
+        public void replace(WordRV word) {
+            // Search for the longest among the following suffixes and if found, delete if
+            // the preceding character is neither a vowel nor H
+            // Note that the preceding character itself must also be in RV.
+            String searchWord = word.getWord().substring(word.getRV_Start());
+            String longestSuffix = Stemming.getLongestSuffix(suffixes, searchWord);
+            if (longestSuffix != null) {
+                int suffixIndex = word.getWord().lastIndexOf(longestSuffix);
+
+                int previousCharIndex = suffixIndex - 1;
+                if (previousCharIndex < 0)
+                    return;
+
+                // check if in RV
+                if (!word.isInRegion(Region.RV, previousCharIndex))
+                    return;
+
+                // delete if the preceding character is neither a vowel nor H
+                char previousChar = word.getWord().charAt(previousCharIndex);
+                if (!Stemming.isVowel(previousChar) && previousChar != 'H') {
+                    word.setWord(Stemming.replaceLast(word.getWord(), longestSuffix, ""));
+                }
+            }
+        }
+    };
+
+    // Step 2b: Other verb suffixes
+    // Search for the longest among the following suffixes, and perform the action
+    // indicated.
+    // rappel : tout se passe dans RV
+    public static IReplaceStep step2b = new IReplaceStep() {
+        List<String> suffixes1 = Arrays.asList("ions");
+        List<String> suffixes2 = Arrays.asList("é", "ée", "ées", "és", "èrent", "er", "era", "erai", "eraIent", "erais",
+                "erait", "eras", "erez", "eriez", "erions", "erons", "eront", "ez", "iez");
+        List<String> suffixes3 = Arrays.asList("âmes", "ât", "âtes", "a", "ai", "aIent", "ais", "ait", "ant", "ante",
+                "antes", "ants", "as", "asse", "assent", "asses", "assiez", "assions");
+
+        @Override
+        public void replace(WordRV word) {
+            // ions delete if in R2
+            boolean result = word.replaceSuffix(Region.R2, suffixes1, "");
+            if (result) {
+                word.setFoundStep2aSuffixes(true);
+            }
+
+            // suffixes 2 delete.
+            result = word.replaceSuffix(Region.RV, suffixes2, "");
+            if (result) {
+                word.setFoundStep2aSuffixes(true);
+            }
+
+            // delete
+            // if preceded by e, delete
+            String searchWord = word.getWord().substring(word.getRV_Start());
+            String longestSuffix = Stemming.getLongestSuffix(suffixes3, searchWord);
+
+            if (longestSuffix != null) {
+                int suffixIndex = word.getWord().lastIndexOf(longestSuffix);
+                int previousCharIndex = suffixIndex - 1;
+                if (previousCharIndex < 0)
+                    return;
+
+                // check if in RV
+                if (!word.isInRegion(Region.RV, previousCharIndex))
+                    return;
+
+                // delete if preceded by e
+                char previousChar = word.getWord().charAt(previousCharIndex);
+                if (previousChar == 'e') {
+                    word.setWord(Stemming.replaceLast(word.getWord(), "e", ""));
+                    word.setFoundStep2aSuffixes(true);
+                }
+            }
+
+        }
+    };
+
+    // ! If the last step to be obeyed — either step 1, 2a or 2b — altered the word,
+    // do step 3
+    // Step 3
+    // Replace final Y with i or final ç with c
+    public static IReplaceStep step3 = new IReplaceStep() {
+        @Override
+        public void replace(WordRV word) {
+            // replace final Y with i
+            if (word.getWord().endsWith("Y")) {
+                word.setWord(Stemming.replaceLast(word.getWord(), "Y", "i"));
+            }
+
+            // replace final ç with c
+            if (word.getWord().endsWith("ç")) {
+                word.setWord(Stemming.replaceLast(word.getWord(), "ç", "c"));
+            }
+        }
+    };
+
+    // Step 4
+    // If the word ends s, not preceded by a, i (unless itself preceded by H), o, u,
+    // è or s, delete it.
+    // In the rest of step 4, all tests are confined to the RV region
+    public static IReplaceStep step4 = new IReplaceStep() {
+        List<Character> pasAvantS = Arrays.asList('a', 'i', 'o', 'u', 'è', 's');
+        List<String> remplaceParI = Arrays.asList("ier", "ière", "Ier", "Ière");
+
+        @Override
+        public void replace(WordRV word) {
+            // if the word ends s, not preceded by a, i (unless itself preceded by H), o, u,
+            // è or s, delete it.
+            if (word.getWord().endsWith("s")) {
+                int previousCharIndex = word.getWord().length() - 2;
+                if (previousCharIndex < 0)
+                    return;
+                int previousEncore = previousCharIndex - 1;
+                if (previousEncore < 0)
+                    return;
+
+                char previousChar = word.getWord().charAt(previousCharIndex);
+                char previousEncoreChar = word.getWord().charAt(previousEncore);
+
+                if (!pasAvantS.contains(previousChar) || (previousChar == 'i' && previousEncoreChar == 'H')) {
+                    word.setWord(Stemming.replaceLast(word.getWord(), "s", ""));
+                }
+
+                // dans le reste de step 4, tous les tests sont confinés à la région RV
+                // "ion" delete if in R2 and preceded by s or t
+                // interpretation -> s et t doivent être dans RV
+                // So note that ion is removed only when it is in R2 — as well as being in RV —
+                // and preceded
+                // by s or t which must be in RV.
+                word.deleteIfPrecededBySuffix(Region.R2, Arrays.asList("ions"), "", Arrays.asList('s', 't'), false,
+                        Region.RV);
+
+                // ier ière Ier Ière replace with i
+                word.replaceSuffix(Region.RV, remplaceParI, "i");
+
+                // e delete
+                word.replaceSuffix(Region.RV, Arrays.asList("e"), "");
+            }
+        }
+    };
+
+    // ! Always do steps 5 and 6.
+
+    // Step 5 : Undouble
+    // If the word ends enn, onn, ett, ell or eill, delete the last letter
+    public static IReplaceStep step5 = new IReplaceStep() {
+        List<String> suffixes = Arrays.asList("enn", "onn", "ett", "ell", "eill");
+
+        @Override
+        public void replace(WordRV word) {
+            for (String suffix : suffixes) {
+                if (word.getWord().endsWith(suffix)) {
+                    word.deleteLastLetter();
+                }
+            }
+        }
+    };
+
+    // Step 6: Un-accent
+    // If the words ends é or è followed by at least one non-vowel, remove the accent from the e.
+    public static IReplaceStep step6 = new IReplaceStep() {
+
+        @Override
+        public void replace(WordRV word) {
+            int avantDernierIndex = word.getWord().length() - 2;
+            if (avantDernierIndex < 0)
+                return;
+            char avantDernierChar = word.getWord().charAt(avantDernierIndex);
+
+            if (avantDernierChar == 'é' || avantDernierChar == 'è') {
+                int dernierIndex = word.getWord().length() - 1;
+                if (dernierIndex < 0)
+                    return;
+                char dernierChar = word.getWord().charAt(dernierIndex);
+
+                if (!Stemming.isVowel(dernierChar)) {
+                    word.setWord(Stemming.replaceLast(word.getWord(), String.valueOf(avantDernierChar), "e"));
+                }
+            }
+        }
+    };
+
+    // step finally
+    // Turn any remaining I, U and Y letters in the word back into lower case.
+    // Turn He and Hi back into ë and ï, and remove any remaining H
+    public static IReplaceStep stepFinally = new IReplaceStep() {
+        @Override
+        public void replace(WordRV word) {
+            word.setWord(word.getWord().replace("I", "i"));
+            word.setWord(word.getWord().replace("U", "u"));
+            word.setWord(word.getWord().replace("Y", "y"));
+            word.setWord(word.getWord().replace("He", "ë"));
+            word.setWord(word.getWord().replace("Hi", "ï"));
+            word.setWord(word.getWord().replace("H", ""));
+        }
+    };
 }
