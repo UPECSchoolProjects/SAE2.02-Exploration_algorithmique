@@ -29,15 +29,13 @@ public class WordRV {
     private String R2 = null;
     private String RV = null;
     private boolean doStep2a;
-    private boolean foundStep2aSuffixes;
-    private boolean step2aFoundSuffixes;
+    private boolean foundStep2aSuffixes; // si on a trouvé un suffixe de step2a
 
     public WordRV(String word) {
         this.baseWord = word;
         this.setWord(word);
         this.doStep2a = true;
         this.foundStep2aSuffixes = false;
-        this.step2aFoundSuffixes = false;
         this.RV_Start = wordLength;
         this.R1_Start = wordLength;
         this.R2_Start = wordLength;
@@ -48,7 +46,6 @@ public class WordRV {
         this.setWord(word);
         this.doStep2a = true;
         this.foundStep2aSuffixes = false;
-        this.step2aFoundSuffixes = false;
         this.RV_Start = rV_Start;
         this.R1_Start = r1_Start;
         this.R2_Start = r2_Start;
@@ -59,7 +56,6 @@ public class WordRV {
         this.setWord(word);
         this.doStep2a = true;
         this.foundStep2aSuffixes = false;
-        this.step2aFoundSuffixes = false;
         this.RV_Start = rV_Start;
         this.R1_Start = wordLength;
         this.R2_Start = wordLength;
@@ -70,7 +66,6 @@ public class WordRV {
         this.setWord(word);
         this.doStep2a = true;
         this.foundStep2aSuffixes = false;
-        this.step2aFoundSuffixes = false;
         this.RV_Start = word.indexOf(rv);
         this.RV = rv;
         this.R1_Start = wordLength;
@@ -82,7 +77,6 @@ public class WordRV {
         this.setWord(word);
         this.doStep2a = true;
         this.foundStep2aSuffixes = false;
-        this.step2aFoundSuffixes = false;
         this.RV_Start = wordLength;
         this.R1_Start = word.indexOf(r1);
         this.R1 = r1;
@@ -321,5 +315,4 @@ public class WordRV {
     public void setFoundStep2aSuffixes(boolean foundStep2aSuffixes) {
         this.foundStep2aSuffixes = foundStep2aSuffixes;
     }
-
 }

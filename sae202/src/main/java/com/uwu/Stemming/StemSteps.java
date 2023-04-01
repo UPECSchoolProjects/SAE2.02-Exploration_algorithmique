@@ -319,6 +319,7 @@ public class StemSteps {
                 char previousChar = word.getWord().charAt(previousCharIndex);
                 if (!Stemming.isVowel(previousChar) && previousChar != 'H') {
                     word.setWord(Stemming.replaceLast(word.getWord(), longestSuffix, ""));
+                    word.setFoundStep2aSuffixes(true);
                 }
             }
         }
@@ -338,16 +339,12 @@ public class StemSteps {
         @Override
         public void replace(WordRV word) {
             // ions delete if in R2
-            boolean result = word.replaceSuffix(Region.R2, suffixes1, "");
-            if (result) {
-                word.setFoundStep2aSuffixes(true);
-            }
+            word.replaceSuffix(Region.R2, suffixes1, "");
+
 
             // suffixes 2 delete.
-            result = word.replaceSuffix(Region.RV, suffixes2, "");
-            if (result) {
-                word.setFoundStep2aSuffixes(true);
-            }
+            word.replaceSuffix(Region.RV, suffixes2, "");
+    
 
             // delete
             // if preceded by e, delete
@@ -368,7 +365,6 @@ public class StemSteps {
                 char previousChar = word.getWord().charAt(previousCharIndex);
                 if (previousChar == 'e') {
                     word.setWord(Stemming.replaceLast(word.getWord(), "e", ""));
-                    word.setFoundStep2aSuffixes(true);
                 }
             }
 
