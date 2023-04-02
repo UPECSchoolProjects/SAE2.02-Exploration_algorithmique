@@ -24,8 +24,9 @@ public class PdfConverter implements IConverter {
 
     public PdfConverter(FileObj file, String outputfolder) {
         this.file = file;
+        this.outputFolder = outputfolder;
 
-        this.outputURL = outputFolder + this.file.getNameWithAnotherExt("txt");
+        this.outputURL = this.outputFolder + this.file.getNameWithAnotherExt("txt");
     }
 
     @Override
