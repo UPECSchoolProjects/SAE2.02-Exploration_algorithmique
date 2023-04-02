@@ -259,6 +259,8 @@ public class CLI {
                 continue;
             }
 
+            logger.debug("Out dir : " + this.outDirFile.getAbsolutePath() + File.separator);
+
             IConverter converter = ConversionFactory.getConverter(file,
                     this.outDirFile.getAbsolutePath() + File.separator, this.keyText, this.classText);
             File convertedFilePath = new File(

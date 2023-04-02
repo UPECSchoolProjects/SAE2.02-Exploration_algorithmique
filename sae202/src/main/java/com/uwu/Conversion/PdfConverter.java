@@ -25,13 +25,14 @@ public class PdfConverter implements IConverter {
     public PdfConverter(FileObj file, String outputfolder) {
         this.file = file;
 
-        this.outputURL = this.outputFolder + this.file.getNameWithAnotherExt("txt");
+        this.outputURL = outputFolder + this.file.getNameWithAnotherExt("txt");
     }
 
     @Override
     public File convert() {
         try {
             logger.info("Convertion de " + this.file.getName() + " en " + this.file.getNameWithAnotherExt("txt"));
+            logger.debug("Output : " + this.outputURL);
             PDDocument document = PDDocument.load(new File(this.file.getFullPath()));
             BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputURL));
 

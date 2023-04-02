@@ -74,6 +74,7 @@ public class HTMLConverter implements IConverter {
         this.file = file;
         this.classText = classText == null ? "text" : classText;
         this.keyText = keyText == null ? "class" : keyText;
+        this.outputPath = outputPath;
 
         this.outputPathURL = this.outputPath + this.file.getNameWithAnotherExt("txt");
         logger.debug("New HTMLConverter created for file " + this.file.getName() + " with output path "
