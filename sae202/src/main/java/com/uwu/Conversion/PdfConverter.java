@@ -8,6 +8,8 @@ import java.io.IOException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import com.uwu.FileObj;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,29 +17,22 @@ public class PdfConverter implements IConverter {
 
     private static final Logger logger = LogManager.getLogger(PdfConverter.class);
 
-    private String fileName;
-    private String fileNameWithoutExtension;
-    private String filePath;
+    private FileObj file;
+
     private String outputFolder;
-    private String fileURL;
     private String outputURL;
 
-    public PdfConverter(String filePath, String fileName, String outputfolder) {
-        this.filePath = filePath;
-        this.fileName = fileName;
-        this.outputFolder = outputfolder;
+    public PdfConverter(FileObj file, String outputfolder) {
+        this.file = file;
 
-        this.fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
-
-        this.fileURL = this.filePath + this.fileName;
-        this.outputURL = this.outputFolder + this.fileNameWithoutExtension + ".txt";
+        this.outputURL = this.outputFolder + this.file.getNameWithAnotherExt("txt");
     }
 
     @Override
     public File convert() {
         try {
-            logger.info("Convertion de " + this.fileName + " en " + this.fileNameWithoutExtension + ".txt");
-            PDDocument document = PDDocument.load(new File(fileURL));
+            logger.info("Convertion de " + this.file.getName() + " en " + this.file.getNameWithAnotherExt("txt"));
+            PDDocument document = PDDocument.load(new File(this.file.getFullPath()));
             BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputURL));
 
             PDFTextStripper stripper = new PDFTextStripper();

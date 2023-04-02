@@ -18,7 +18,7 @@ public class AnalyseTests {
 
     @Test
     public void verifyAnalyse() {
-        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt", null, new Stemming());
+        Analyse analyseur = new Analyse("TestsInputs/testFrequence.txt", Analyse.lire_mot_vides("mot_vide.txt"), new Stemming());
 
         Map<String, AnalyseMot> map;
         try {

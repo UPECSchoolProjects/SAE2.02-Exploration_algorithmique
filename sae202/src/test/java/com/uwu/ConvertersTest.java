@@ -25,7 +25,8 @@ public class ConvertersTest {
      */
     @Test
     public void testHTMLConverter() {
-        HTMLConverter html = new HTMLConverter("TestsInputs/", "test.html", null, "root");
+        File file = new File("TestsInputs/test.html");
+        HTMLConverter html = new HTMLConverter(new FileObj(file.getAbsolutePath()), null, null, "root");
         String text = html.getText();
 
         logger.debug("HTML TEXT : " + text);
@@ -35,7 +36,8 @@ public class ConvertersTest {
 
     @Test
     public void testPDFConverter() {
-        PdfConverter pdf = new PdfConverter("TestsInputs/", "test.pdf", "TestsOutput/");
+        File inputFile = new File("TestsInputs/test.pdf");
+        PdfConverter pdf = new PdfConverter(new FileObj(inputFile.getAbsolutePath()), "TestsOutput/");
 
         File file = pdf.convert();
 

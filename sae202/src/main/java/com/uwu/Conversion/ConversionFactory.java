@@ -1,13 +1,16 @@
 package com.uwu.Conversion;
 
+import com.uwu.FileObj;
+
 public class ConversionFactory {
 
-    public static IConverter getConverter(String path, String fileName, String classText, String outputPath) {
-        switch (fileName.substring(fileName.lastIndexOf('.') + 1)) {
+    public static IConverter getConverter(FileObj file, String outputPath, String keyText, String classText) {
+        switch (file.getExtension()) {
             case "pdf":
-                return new PdfConverter(path, fileName, outputPath);
+                return new PdfConverter(file, outputPath);
             case "html":
-                return new HTMLConverter(path, fileName, outputPath, classText);
+            case "htm":
+                return new HTMLConverter(file, outputPath, keyText, classText);
             case "txt":
                 return null;
             default:

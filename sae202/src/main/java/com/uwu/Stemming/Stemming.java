@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Stemming {
     /*
      * Cette classe implémente l'algorithme de racinisation donnée dans le cahier des
@@ -13,6 +16,8 @@ public class Stemming {
      * 
      * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la SAE2.02
      */
+    private static final Logger logger = LogManager.getLogger(Stemming.class);
+    
 
     /**
      * Liste des voyelles utilisées dans l'algorithme de racinisation pour le français
@@ -289,6 +294,7 @@ public class Stemming {
                 StemSteps.step2b.replace(wordRV);
             }
         }
+
         // If the last step to be obeyed — either step 1, 2a or 2b — altered the word, do step 3
         if(!wordReferenceForStep3.equals(wordRV.getWord())) {
             StemSteps.step3.replace(wordRV);

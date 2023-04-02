@@ -1,15 +1,18 @@
 package com.uwu;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -21,18 +24,6 @@ public class Analyse {
 
     private static final Logger logger = LogManager.getLogger(Analyse.class);
 
-    static private java.util.Map<String, String> exceptedMap = java.util.Map.ofEntries(java.util.Map.entry("é", "e"),
-            java.util.Map.entry("è", "e"),
-            java.util.Map.entry("ê", "e"), java.util.Map.entry("à", "a"),
-            java.util.Map.entry("â", "a"), java.util.Map.entry("î", "i"),
-            java.util.Map.entry("ï", "i"), java.util.Map.entry("ô", "o"),
-            java.util.Map.entry("û", "u"), java.util.Map.entry("ù", "u"),
-            java.util.Map.entry("ç", "c"), java.util.Map.entry("œ", "oe"),
-            java.util.Map.entry("æ", "ae"), java.util.Map.entry("ë", "e"),
-            java.util.Map.entry("ü", "u"), java.util.Map.entry("ÿ", "y"),
-            java.util.Map.entry("Æ", "Ae"), java.util.Map.entry("Ø", "oe"),
-            java.util.Map.entry("Å", "Aa"), java.util.Map.entry("Þ", "th"),
-            java.util.Map.entry("ß", "ss"));
     static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’]");
 
     public static String getMostFrequentWordInHashMap(Map<String, Integer> map) {
@@ -47,21 +38,22 @@ public class Analyse {
         return mot;
     }
 
-    ArrayList<String> motsVides = new ArrayList<String>();
+    List<String> motsVides;
     private String filePath;
     private String motVidePath;
     private Stemming stemming;
 
-    public Analyse(String filePath, String motVidePath, Stemming stemming) {
+    public Analyse(String filePath, List<String> motVide, Stemming stemming) {
         this.filePath = filePath;
         this.motVidePath = motVidePath == null ? "mot_vide.txt" : motVidePath;
         this.stemming = stemming;
         File file = new File(filePath);
         if (!file.exists()) {
             logger.error("Le fichier " + filePath + " est introuvable");
+            System.exit(-1);
         }
 
-        this.lire_mot_vides();
+        this.motsVides = motVide == null ? new ArrayList<String>() : motVide;
 
     }
 
@@ -78,11 +70,12 @@ public class Analyse {
     // }
     // }
 
-    public void lire_mot_vides() {
-        File file = new File(this.motVidePath);
+    public static List<String> lire_mot_vides(String motVidePath) {
+        File file = new File(motVidePath);
+        List<String> motsVides = new ArrayList<String>();
         if (!file.exists()) {
             logger.error("Le fichier " + file.getAbsolutePath() + " est introuvable");
-            return;
+            return motsVides;
         }
 
         try {
@@ -102,6 +95,8 @@ public class Analyse {
             logger.error("Erreur lors de la lecture du fichier " + file.getAbsolutePath());
             logger.debug(e.getStackTrace());
         }
+
+        return motsVides;
     }
 
     // public void lire_mot_vides() throws IOException {
@@ -136,10 +131,10 @@ public class Analyse {
         Map<String, Map<String, Integer>> compteurMotDominantDansRacine = new HashMap<String, Map<String, Integer>>();
         int nbMot = 0;
         Map<String, Integer> compteur = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) { // Ouvre le fichier
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+            new FileInputStream(filePath), "UTF-8"))) { // Ouvre le fichier
             String ligne;
             while ((ligne = br.readLine()) != null) { // Lit le fichier ligne par ligne
-                logger.trace("ligne: " + ligne);
                 ligne = ponctuationRegex.matcher(ligne).replaceAll(" "); // enlever ponctuation
 
                 String[] mots = ligne.split(" +"); // Sépare la ligne en mots
@@ -147,8 +142,6 @@ public class Analyse {
                     logger.trace("mot: " + mot);
                     String motRacine = stemming.stemm(mot) ;
                     logger.trace('[' + mot + "] -> [" + motRacine + ']');
-
-                    motRacine = motRacine.replaceAll("[^a-z-]", ""); // Supprime les caractères non alphabétiques
 
                     if (compteurMotDominantDansRacine.containsKey(motRacine)) {
                         Map<String, Integer> map = compteurMotDominantDansRacine.get(motRacine);
@@ -189,7 +182,7 @@ public class Analyse {
     public void ecrireCSV(String nomFichier) throws IOException { // Génère un fichier CSV avec les
                                                                   // mots et leur
                                                                   // fréquence
-        try (FileWriter writer = new FileWriter(nomFichier)) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(nomFichier, true), StandardCharsets.UTF_8))) {
             writer.append("MOT");
             writer.append(";");
             writer.append("RACINE");
