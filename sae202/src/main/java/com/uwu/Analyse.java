@@ -132,7 +132,7 @@ public class Analyse {
         int nbMot = 0;
         Map<String, Integer> compteur = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
-            new FileInputStream(filePath), "UTF-8"))) { // Ouvre le fichier
+                new FileInputStream(filePath), "UTF-8"))) { // Ouvre le fichier
             String ligne;
             while ((ligne = br.readLine()) != null) { // Lit le fichier ligne par ligne
                 ligne = ponctuationRegex.matcher(ligne).replaceAll(" "); // enlever ponctuation
@@ -140,7 +140,7 @@ public class Analyse {
                 String[] mots = ligne.split(" +"); // Sépare la ligne en mots
                 for (String mot : mots) {
                     logger.trace("mot: " + mot);
-                    String motRacine = stemming.stemm(mot) ;
+                    String motRacine = stemming.stemm(mot);
                     logger.trace('[' + mot + "] -> [" + motRacine + ']');
 
                     if (compteurMotDominantDansRacine.containsKey(motRacine)) {
@@ -154,7 +154,7 @@ public class Analyse {
                     }
                     logger.trace("mot: " + motRacine + " - length: " + motRacine.length());
                     if ((!motsVides.contains(motRacine)) && motRacine.length() > 1) { // Vérifie que le mot n'est
-                                                                          // pas vide
+                        // pas vide
                         nbMot++;
                         compteur.put(motRacine, compteur.getOrDefault(motRacine, 0) + 1); // Incrémente la fréquence du
                         // mot
@@ -167,7 +167,8 @@ public class Analyse {
         Map<String, AnalyseMot> analyseMap = new HashMap<>();
         for (Map.Entry<String, Integer> entry : compteur.entrySet()) { // Parcourt la Map
             if (entry.getValue() > 1) { // Vérifie que le mot apparait plus d'une fois
-                AnalyseMot analyseMot = new AnalyseMot(getMostFrequentWordInHashMap(compteurMotDominantDansRacine.get(entry.getKey())),
+                AnalyseMot analyseMot = new AnalyseMot(
+                        getMostFrequentWordInHashMap(compteurMotDominantDansRacine.get(entry.getKey())),
                         entry.getValue() / ((double) nbMot), entry.getValue());
                 analyseMap.put(entry.getKey(), analyseMot); // Ajoute le mot et sa fréquence
                 logger.trace("mot: " + entry.getKey() + " - occurence: " + entry.getValue() + " - freq: "
@@ -181,7 +182,14 @@ public class Analyse {
     public void ecrireCSV(String nomFichier) throws IOException { // Génère un fichier CSV avec les
                                                                   // mots et leur
                                                                   // fréquence
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(nomFichier, true), StandardCharsets.UTF_8))) {
+
+        // if file exist delete it
+        File file = new File(nomFichier);
+        if (file.exists()) {
+            file.delete();
+        }
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(nomFichier, true), StandardCharsets.UTF_8))) {
             writer.append("MOT");
             writer.append(";");
             writer.append("RACINE");
