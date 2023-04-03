@@ -301,12 +301,6 @@ public class Stemming {
         wordRV.setR1_Start(find_R1(wordRV.getWord()));
         wordRV.setR2_Start(find_R2(wordRV.getWord(), wordRV.getR1_Start()));
 
-        logger.info("word: " + word);
-        logger.info("wordRV: " + wordRV.getWord());
-        logger.info("RV: " + wordRV.getRV());
-        logger.info("R1: " + wordRV.getR1());
-        logger.info("R2: " + wordRV.getR2());
-
         // sert à vérrifier si l'étape 3 doit être appliquée
         String wordReferenceForStep3 = wordRV.getWord();
 
@@ -337,7 +331,6 @@ public class Stemming {
         } else {
             // Alternatively, if the last step to be obeyed did not alter the word, do step
             // 4
-            System.out.println("step 4");
             StemSteps.step4.replace(wordRV);
         }
 

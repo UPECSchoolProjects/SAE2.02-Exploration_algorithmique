@@ -421,12 +421,9 @@ public class StemSteps {
             if (word.getWord().endsWith("s")) {
                 int previousCharIndex = word.getWord().length() - 2;
 
-                System.out.println("previousCharIndex : " + previousCharIndex);
 
                 int previousEncore = previousCharIndex - 1;
                 if (previousEncore > 0) {
-
-                    System.out.println("previousCharIndex : " + previousCharIndex);
 
                     char previousChar = word.getWord().charAt(previousCharIndex);
                     char previousEncoreChar = word.getWord().charAt(previousEncore);
@@ -451,8 +448,6 @@ public class StemSteps {
 
             // e delete
             // print rv
-            System.out.println("word " + word.getWord() + "RV :" + word.getRV() + " - suffix: e - "
-                    + word.getWord().endsWith("e"));
             word.replaceSuffix(Region.RV, Arrays.asList("e"), "");
         }
     };
@@ -468,8 +463,6 @@ public class StemSteps {
         public void replace(WordRV word) {
 
             for (String suffix : suffixes) {
-                System.out.println(
-                        "word " + word.getWord() + " - suffix: " + suffix + " - " + word.getWord().endsWith(suffix));
                 if (word.getWord().endsWith(suffix)) {
                     word.deleteLastLetter();
                 }

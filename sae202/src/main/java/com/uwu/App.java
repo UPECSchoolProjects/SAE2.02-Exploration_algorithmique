@@ -23,13 +23,8 @@ public class App {
     private static final Logger logger = LogManager.getLogger(App.class);
 
     public static void main(String[] args) {
-        //CLI cli = new CLI(args);
-        //cli.executeCLI();
-
-        Stemming stemming = new Stemming();
-        String word = "vieille";
-        String stem = stemming.stemm(word);
-        System.out.println("stemming de " + word + " : " + stem);
+        CLI cli = new CLI(args);
+        cli.executeCLI();
     }
 
 
