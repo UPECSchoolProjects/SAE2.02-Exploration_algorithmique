@@ -38,6 +38,10 @@ public enum CLIOptions {
         this.isRequired = isRequired;
     }
 
+    /**
+     * Convertit l'element de l'enum en option pour la librairie Apache Commons CLI
+     * @return org.apache.commons.cli.Option correspondant à l'element de l'enum
+     */
     public Option toOption() {
         Option option = new Option(this.shortOpt, this.description);
         option.setLongOpt(this.longOpt);
@@ -56,6 +60,10 @@ public enum CLIOptions {
         return option;
     }
 
+    /**
+     * Le nom court de l'option est utilisé dans les fonctions de la librairie Apache Commons CLI
+     * @return Renvoie le nom court de l'option
+     */
     public String getShortOpt() {
         return this.shortOpt;
     }
