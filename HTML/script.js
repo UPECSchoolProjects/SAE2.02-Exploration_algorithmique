@@ -149,10 +149,15 @@ async function changeFile() {
 
 function updateURL(filename, path) {
     // change params in url
+
+    if(path.endsWith("/")) path = path.substring(0, path.length - 1);
+
     let url = new URL(window.location.href);
     url.searchParams.set("file", filename);
     url.searchParams.set("path", path);
-    window.location = url.toString();
+    console.log(url.toString());
+    let state = { filename: filename, path: path };
+    window.history.pushState(state, "", url.toString());
 }
 
 function updateNbWord(value) {
