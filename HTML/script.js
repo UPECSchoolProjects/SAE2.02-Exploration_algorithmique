@@ -46,6 +46,11 @@ async function getCSVData(dataURL, nbwords) {
 
 async function drawChart(dataURL, nbwords) {
     console.log(dataURL)
+
+    if (chart) {
+        chart.dispose();
+    }
+    document.getElementById("container").innerHTML = "";
     // fonction pour créer le nuage de mots
     // create a tag (word) cloud chart
     chart = anychart.tagCloud(await getCSVData(dataURL, nbwords));
@@ -61,7 +66,8 @@ async function drawChart(dataURL, nbwords) {
 
     // display the word cloud chart
     chart.container("container");
-    chart.draw();
+    chart.autoRedraw(false);
+    await chart.draw(true);
 }
 
 async function populateSelect() {
@@ -116,9 +122,9 @@ function getSelectedFile() {
     console.log(file)
 
     let folder = select.options[selectedOption].parentNode.label
-    if(!folder.endsWith("/")) folder += "/";
+    if (!folder.endsWith("/")) folder += "/";
 
-    return {filename: file, folder: folder};
+    return { filename: file, folder: folder };
 }
 
 async function changeFile() {
@@ -126,23 +132,51 @@ async function changeFile() {
     console.log("changed file to " + document.getElementById("selector").value + " !");
     let file = getSelectedFile();
     chart.data(await getCSVData(HOST + file.folder + file.filename, nbwords));
+    // disable fields
+    document.getElementById("nbwords").disabled = true;
+    document.getElementById("selector").disabled = true;
+
+    await chart.draw(true);
+
+    // enable fields
+    document.getElementById("nbwords").disabled = false;
+    document.getElementById("selector").disabled = false;
+}
+
+function updateNbWord(value) {
+    console.log(value)
+    if (isNaN(value) || value == "") return;
+    console.log("changed nbwords to " + value + " !");
+    nbwords = value;
+    changeFile();
 }
 
 async function ready() {
+
+    // disable fields
+    document.getElementById("nbwords").disabled = true;
+    document.getElementById("selector").disabled = true;
+
     // fonction pour lancer le nuage de mots
     await populateSelect();
     let path = getSelectedFile();
 
-    drawChart(HOST + path.folder + path.filename, 15);
+    // get initial val
+    nbwords = document.getElementById("nbwords").value;
+    console.log(nbwords)
+    console.log(document.getElementById("nbwords").value);
+
+
+    await drawChart(HOST + path.folder + path.filename, nbwords);
+
+    // enable fields
+    document.getElementById("nbwords").disabled = false;
+    document.getElementById("selector").disabled = false;
 }
 
 document.addEventListener("DOMContentLoaded", ready);
 document.getElementById("selector").addEventListener("change", changeFile);
 document.getElementById("nbwords").addEventListener("change", ($event) => {
     let value = $event.target.value;
-    console.log(value)
-    if(isNaN(value) || value == "") return;
-    console.log("changed nbwords to " + value + " !");
-    nbwords = value;
-    changeFile();
+    updateNbWord(value);
 });
