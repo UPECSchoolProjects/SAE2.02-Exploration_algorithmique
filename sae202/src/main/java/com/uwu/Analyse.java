@@ -25,6 +25,7 @@ public class Analyse {
     private static final Logger logger = LogManager.getLogger(Analyse.class);
 
     static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’><]");
+    static Pattern pronomSuffixRegex = Pattern.compile("-(?:je|tu|il|elle|nous|vous|ils|elles|moi)\\b");
 
     public static String getMostFrequentWordInHashMap(Map<String, Integer> map) {
         int max = 0;
@@ -139,6 +140,11 @@ public class Analyse {
 
                 String[] mots = ligne.split(" +"); // Sépare la ligne en mots
                 for (String mot : mots) {
+
+                    // enlever le pronom après un tiret ex : "ecrit-elle"
+                    // ce regex est là pour éviter de supprimer les mots au-dessus etc
+                    mot = pronomSuffixRegex.matcher(mot).replaceAll("");
+
                     logger.trace("mot: " + mot);
                     String motRacine = stemming.stemm(mot);
                     logger.trace('[' + mot + "] -> [" + motRacine + ']');
