@@ -24,7 +24,7 @@ public class Analyse {
 
     private static final Logger logger = LogManager.getLogger(Analyse.class);
 
-    static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’><»«)(]");
+    static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’><»«)(\"\\[\\]{}<>\\/…\\-']");
     static Pattern pronomSuffixRegex = Pattern.compile("-(?:je|tu|il|elle|nous|vous|ils|elles|moi)\\b");
 
     public static String getMostFrequentWordInHashMap(Map<String, Integer> map) {
