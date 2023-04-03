@@ -24,7 +24,7 @@ public class Analyse {
 
     private static final Logger logger = LogManager.getLogger(Analyse.class);
 
-    static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’]");
+    static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’><]");
 
     public static String getMostFrequentWordInHashMap(Map<String, Integer> map) {
         int max = 0;
