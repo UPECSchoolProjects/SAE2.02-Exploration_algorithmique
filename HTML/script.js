@@ -141,10 +141,8 @@ async function changeFile() {
     await drawChart(HOST + file.folder + file.filename, nbwords);
 
     // enable fields
-    setTimeout(() => {
-        nbwordHTML.disabled = false;
-        selectorHTML.disabled = false;
-    }, 100);
+    nbwordHTML.disabled = false;
+    selectorHTML.disabled = false;
 }
 
 
