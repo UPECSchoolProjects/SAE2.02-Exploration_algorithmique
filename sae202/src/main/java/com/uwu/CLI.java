@@ -117,7 +117,8 @@ public class CLI {
                 unifiedFile = App.unifyFiles(convertedFiles, outDirFile.getAbsolutePath(),
                         UnifiedFileName);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Impossible de créer le fichier unifié : " + e.getMessage());
+                System.exit(-1);
             }
 
             logger.info("Fichier unifié créé : " + App.getRelativePath(unifiedFile.getFullPath()));

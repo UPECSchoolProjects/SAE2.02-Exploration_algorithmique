@@ -7,12 +7,14 @@ import java.util.List;
 import com.uwu.Stemming.WordRV.Region;
 
 /**
- *  Cette classe détaille toutes les étapes de remplacement de l'algorithme de racinisation
- *  elle utilise l'interface IReplaceStep pour définir les étapes de remplacement
+ * Cette classe détaille toutes les étapes de remplacement de l'algorithme de
+ * racinisation
+ * elle utilise l'interface IReplaceStep pour définir les étapes de remplacement
  * 
- *  à chaque étape (si j'ai pas oublié) j'ai mis un commentaire avec la phrase du cahier des charges
- *  
- *  @author Maxime LOTTO
+ * à chaque étape (si j'ai pas oublié) j'ai mis un commentaire avec la phrase du
+ * cahier des charges
+ * 
+ * @author Maxime LOTTO
  */
 public class StemSteps {
     /*
@@ -25,10 +27,10 @@ public class StemSteps {
      */
 
     /**
-     * vérifie si le suffixe est précédé par une voyelle 
+     * vérifie si le suffixe est précédé par une voyelle
      * utile pour l'étape 1 : // delete if in R1 and preceded by a non-vowel
      * 
-     * @param word le mot complet
+     * @param word   le mot complet
      * @param suffix le suffixe à vérifier
      * @return true si le suffixe est précédé par une voyelle
      */
@@ -357,10 +359,8 @@ public class StemSteps {
             // ions delete if in R2
             word.replaceSuffix(Region.R2, suffixes1, "");
 
-
             // suffixes 2 delete.
             word.replaceSuffix(Region.RV, suffixes2, "");
-    
 
             // delete
             // if preceded by e, delete
@@ -420,34 +420,40 @@ public class StemSteps {
             // è or s, delete it.
             if (word.getWord().endsWith("s")) {
                 int previousCharIndex = word.getWord().length() - 2;
-                if (previousCharIndex < 0)
-                    return;
+
+                System.out.println("previousCharIndex : " + previousCharIndex);
+
                 int previousEncore = previousCharIndex - 1;
-                if (previousEncore < 0)
-                    return;
+                if (previousEncore > 0) {
 
-                char previousChar = word.getWord().charAt(previousCharIndex);
-                char previousEncoreChar = word.getWord().charAt(previousEncore);
+                    System.out.println("previousCharIndex : " + previousCharIndex);
 
-                if (!pasAvantS.contains(previousChar) || (previousChar == 'i' && previousEncoreChar == 'H')) {
-                    word.setWord(Stemming.replaceLast(word.getWord(), "s", ""));
+                    char previousChar = word.getWord().charAt(previousCharIndex);
+                    char previousEncoreChar = word.getWord().charAt(previousEncore);
+
+                    if (!pasAvantS.contains(previousChar) || (previousChar == 'i' && previousEncoreChar == 'H')) {
+                        word.setWord(Stemming.replaceLast(word.getWord(), "s", ""));
+                    }
                 }
-
-                // dans le reste de step 4, tous les tests sont confinés à la région RV
-                // "ion" delete if in R2 and preceded by s or t
-                // interpretation -> s et t doivent être dans RV
-                // So note that ion is removed only when it is in R2 — as well as being in RV —
-                // and preceded
-                // by s or t which must be in RV.
-                word.deleteIfPrecededBySuffix(Region.R2, Arrays.asList("ions"), "", Arrays.asList('s', 't'), false,
-                        Region.RV);
-
-                // ier ière Ier Ière replace with i
-                word.replaceSuffix(Region.RV, remplaceParI, "i");
-
-                // e delete
-                word.replaceSuffix(Region.RV, Arrays.asList("e"), "");
             }
+
+            // dans le reste de step 4, tous les tests sont confinés à la région RV
+            // "ion" delete if in R2 and preceded by s or t
+            // interpretation -> s et t doivent être dans RV
+            // So note that ion is removed only when it is in R2 — as well as being in RV —
+            // and preceded
+            // by s or t which must be in RV.
+            word.deleteIfPrecededBySuffix(Region.R2, Arrays.asList("ions"), "", Arrays.asList('s', 't'), false,
+                    Region.RV);
+
+            // ier ière Ier Ière replace with i
+            word.replaceSuffix(Region.RV, remplaceParI, "i");
+
+            // e delete
+            // print rv
+            System.out.println("word " + word.getWord() + "RV :" + word.getRV() + " - suffix: e - "
+                    + word.getWord().endsWith("e"));
+            word.replaceSuffix(Region.RV, Arrays.asList("e"), "");
         }
     };
 
@@ -460,7 +466,10 @@ public class StemSteps {
 
         @Override
         public void replace(WordRV word) {
+
             for (String suffix : suffixes) {
+                System.out.println(
+                        "word " + word.getWord() + " - suffix: " + suffix + " - " + word.getWord().endsWith(suffix));
                 if (word.getWord().endsWith(suffix)) {
                     word.deleteLastLetter();
                 }
@@ -469,7 +478,8 @@ public class StemSteps {
     };
 
     // Step 6: Un-accent
-    // If the words ends é or è followed by at least one non-vowel, remove the accent from the e.
+    // If the words ends é or è followed by at least one non-vowel, remove the
+    // accent from the e.
     public static IReplaceStep step6 = new IReplaceStep() {
 
         @Override

@@ -11,22 +11,24 @@ import org.apache.logging.log4j.Logger;
 
 public class Stemming {
     /*
-     * Cette classe implémente l'algorithme de racinisation donnée dans le cahier des
+     * Cette classe implémente l'algorithme de racinisation donnée dans le cahier
+     * des
      * charges.
      * 
-     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la SAE2.02
+     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+     * SAE2.02
      */
     private static final Logger logger = LogManager.getLogger(Stemming.class);
-    
 
     /**
-     * Liste des voyelles utilisées dans l'algorithme de racinisation pour le français
+     * Liste des voyelles utilisées dans l'algorithme de racinisation pour le
+     * français
      */
     private static final ArrayList<Character> vowels = new ArrayList<Character>(
             Arrays.asList('a', 'e', 'i', 'o', 'u', 'y', 'â', 'à',
                     'ë', 'é', 'ê', 'è', 'ï', 'î', 'ô', 'û', 'ù'));
 
-    /** 
+    /**
      * Regex utilisé pour trouver la région RV
      * il est calculé en fonction de la liste des voyelles
      * dans la fonction constructRegex
@@ -41,6 +43,7 @@ public class Stemming {
 
     /**
      * Vérifie si un caractère est une voyelle (vowels est privé)
+     * 
      * @param letter le caractère à vérifier
      * @return true si le caractère est une voyelle en français, false sinon
      */
@@ -49,10 +52,13 @@ public class Stemming {
     }
 
     /**
-     * Le consigne est presque à chaque fois de trouver le suffixe le plus long dans la liste donnée
+     * Le consigne est presque à chaque fois de trouver le suffixe le plus long dans
+     * la liste donnée
      * cette fonction le fait
+     * 
      * @param word le mot à vérifier
-     * @return le suffixe le plus long trouvé dans la liste, null si aucun suffixe n'est trouvé
+     * @return le suffixe le plus long trouvé dans la liste, null si aucun suffixe
+     *         n'est trouvé
      */
     public static String getLongestSuffix(List<String> suffixes, String word) {
         // si je l'initialise à null, on ne peut pas faire de .length() dessus
@@ -69,9 +75,11 @@ public class Stemming {
     }
 
     /**
-     * Cette fonction est utilisée pour remplacer le dernier suffixe trouvé dans un mot
-     * @param string le mot dans lequel on veut remplacer le suffixe
-     * @param toReplace le suffixe à remplacer
+     * Cette fonction est utilisée pour remplacer le dernier suffixe trouvé dans un
+     * mot
+     * 
+     * @param string      le mot dans lequel on veut remplacer le suffixe
+     * @param toReplace   le suffixe à remplacer
      * @param replacement la chaine de remplacement
      * @return le mot avec le suffixe remplacé
      */
@@ -93,7 +101,9 @@ public class Stemming {
     }
 
     /**
-     * Si on veut utiliser une liste de voyelles personnalisée (pas utilisé dans le projet)
+     * Si on veut utiliser une liste de voyelles personnalisée (pas utilisé dans le
+     * projet)
+     * 
      * @param vowels
      */
     public Stemming(ArrayList<Character> vowels) {
@@ -101,9 +111,12 @@ public class Stemming {
     }
 
     /**
-     * Construit les regex utilisés dans l'algorithme de racinisation pour trouver la région RV, R1 et R2
+     * Construit les regex utilisés dans l'algorithme de racinisation pour trouver
+     * la région RV, R1 et R2
+     * 
      * @param vowels la liste des voyelles à utiliser
-     * @return ne retourne rien, mais modifie les variables RV_regex et firstNonvowelsFollowingVowels
+     * @return ne retourne rien, mais modifie les variables RV_regex et
+     *         firstNonvowelsFollowingVowels
      */
     public void constructRegex(ArrayList<Character> vowels) {
         // cette fonction est utilisée pour construire les regex en fonction de la liste
@@ -129,17 +142,22 @@ public class Stemming {
 
     /**
      * Etape préliminaire de l'algorithme de racinisation
-     * Marque les voyelles qui ne sont pas considérées comme telles en les mettant en
-     * majuscule car l'algo de racinisation ne match que sur les voyelles en minuscule
+     * Marque les voyelles qui ne sont pas considérées comme telles en les mettant
+     * en
+     * majuscule car l'algo de racinisation ne match que sur les voyelles en
+     * minuscule
+     * 
      * @param word
      * @return le mot marqué
      */
     public String markNonVowels(String word) {
         int letterIndex = 0;
-        // plutot que de faire des .replace() à tout va sur le mot, on va le construire lettre par lettre
+        // plutot que de faire des .replace() à tout va sur le mot, on va le construire
+        // lettre par lettre
         StringBuilder markedWord = new StringBuilder();
 
-        char lastLetter = ' '; // derniere lettre ajoutée au mot marqué (permet de ne pas devoir faire markedWord.to...)
+        char lastLetter = ' '; // derniere lettre ajoutée au mot marqué (permet de ne pas devoir faire
+                               // markedWord.to...)
         while (letterIndex < word.length()) {
             char letter = word.charAt(letterIndex); // lettre courante
             // la lettre suivante (si elle existe) sinon un espace
@@ -151,7 +169,8 @@ public class Stemming {
 
             // on ne fait des opérations que si la lettre courante est pas une voyelle
             if (!vowels.contains(letter)) {
-                // donc si la lettre courante n'est pas une voyelle, on l'ajoute au mot marqué tel quel
+                // donc si la lettre courante n'est pas une voyelle, on l'ajoute au mot marqué
+                // tel quel
                 lastLetter = letter;
             } else {
                 if ((letter == 'u' || letter == 'i') && isPreviousLetterVowels && isNextLetterVowels) {
@@ -182,10 +201,13 @@ public class Stemming {
     }
 
     /**
-     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la région RV
+     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la
+     * région RV
      * utilise la regex RV_regex
+     * 
      * @param word le mot à traiter
-     * @return l'index du début de la région RV // ! pas le substring de la région RV
+     * @return l'index du début de la région RV // ! pas le substring de la région
+     *         RV
      */
     public int find_RV(String word) {
         /*
@@ -210,7 +232,8 @@ public class Stemming {
     }
 
     /**
-     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la région R1
+     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la
+     * région R1
      * utilise la regex firstNonvowelsFollowingVowels
      * 
      * @param word le mot à traiter
@@ -228,11 +251,15 @@ public class Stemming {
     }
 
     /**
-     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la région R2
+     * Etape préliminaire de l'algorithme de racinisation trouve l'index de la
+     * région R2
      * utilise la regex firstNonvowelsFollowingVowels
-     * @param word le mot à traiter
-     * @param r1_start l'index du début de la région R1 (R2 se base sur le substring de R1)
-     * @return l'index du début de la région R2 // ! pas le substring de la région R2
+     * 
+     * @param word     le mot à traiter
+     * @param r1_start l'index du début de la région R1 (R2 se base sur le substring
+     *                 de R1)
+     * @return l'index du début de la région R2 // ! pas le substring de la région
+     *         R2
      */
     public int find_R2(String word, int r1_start) {
         /*
@@ -247,10 +274,12 @@ public class Stemming {
     }
 
     /**
-     * Fonction principale de l'algorithme de racinisation, elle appelle toutes les étapes ainsi que les étapes préliminaire
+     * Fonction principale de l'algorithme de racinisation, elle appelle toutes les
+     * étapes ainsi que les étapes préliminaire
      * elle vérifie quel étape doit être appliquée
      * 
-     * Elle se base sur les étapes de l'algorithme de racinisation écrites dans StemSteps (voir StemSteps.java)
+     * Elle se base sur les étapes de l'algorithme de racinisation écrites dans
+     * StemSteps (voir StemSteps.java)
      * 
      * @param word le mot à raciniser
      * @return le mot racinisé
@@ -272,6 +301,12 @@ public class Stemming {
         wordRV.setR1_Start(find_R1(wordRV.getWord()));
         wordRV.setR2_Start(find_R2(wordRV.getWord(), wordRV.getR1_Start()));
 
+        logger.info("word: " + word);
+        logger.info("wordRV: " + wordRV.getWord());
+        logger.info("RV: " + wordRV.getRV());
+        logger.info("R1: " + wordRV.getR1());
+        logger.info("R2: " + wordRV.getR2());
+
         // sert à vérrifier si l'étape 3 doit être appliquée
         String wordReferenceForStep3 = wordRV.getWord();
 
@@ -284,22 +319,25 @@ public class Stemming {
         // step 2
         // Do step 2a if either no ending was removed by step 1, or if one of endings
         // amment, emment, ment, ments was found.
-        if(wordRV.isDoStep2a()) {
+        if (wordRV.isDoStep2a()) {
             wordReferenceForStep3 = wordRV.getWord();
             StemSteps.step2a.replace(wordRV);
 
             // Do step 2b if step 2a was done and removed an ending.
-            if(wordRV.isFoundStep2aSuffixes()) {
+            if (wordRV.isFoundStep2aSuffixes()) {
                 wordReferenceForStep3 = wordRV.getWord();
                 StemSteps.step2b.replace(wordRV);
             }
         }
 
-        // If the last step to be obeyed — either step 1, 2a or 2b — altered the word, do step 3
-        if(!wordReferenceForStep3.equals(wordRV.getWord())) {
+        // If the last step to be obeyed — either step 1, 2a or 2b — altered the word,
+        // do step 3
+        if (!wordReferenceForStep3.equals(wordRV.getWord())) {
             StemSteps.step3.replace(wordRV);
         } else {
-            // Alternatively, if the last step to be obeyed did not alter the word, do step 4
+            // Alternatively, if the last step to be obeyed did not alter the word, do step
+            // 4
+            System.out.println("step 4");
             StemSteps.step4.replace(wordRV);
         }
 

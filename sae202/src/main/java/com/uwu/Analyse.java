@@ -174,7 +174,6 @@ public class Analyse {
                         + entry.getValue() / ((double) nbMot));
             }
         }
-        logger.info("AAAAAAAAAAAAAAAAAAAAAAAAAA");
         return analyseMap;
     }
 
