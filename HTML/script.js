@@ -156,8 +156,9 @@ function updateURL(filename, path) {
     let url = new URL(window.location.href);
     url.searchParams.set("file", filename);
     url.searchParams.set("path", path);
+    url.searchParams.set("nbwords", nbwords);
     console.log(url.toString());
-    let state = { filename: filename, path: path };
+    let state = { filename: filename, path: path, nbwords: nbwords };
     window.history.pushState(state, "", url.toString());
 }
 
@@ -196,11 +197,19 @@ async function ready() {
     let urlParams = new URLSearchParams(window.location.search);
     let pathURL = urlParams.get("path");
     let filenameURL = urlParams.get("file");
+    let nbwordsURL = urlParams.get("nbwords");
 
     if (pathURL && filenameURL) {
         let index = searchInSelector(pathURL, filenameURL);
         if (index != -1) {
             selectorHTML.selectedIndex = index;
+        }
+    }
+
+    if (nbwordsURL) {
+        if (!isNaN(nbwordsURL)) {
+            nbwords = nbwordsURL;
+            nbwordHTML.value = nbwordsURL;
         }
     }
 
