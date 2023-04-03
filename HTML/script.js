@@ -1,4 +1,6 @@
 const HOST = "http://localhost:3000";
+let selectorHTML = null;
+let nbwordHTML = null;
 let chart = null;
 let nbwords = 15;
 
@@ -72,7 +74,6 @@ async function drawChart(dataURL, nbwords) {
 
 async function populateSelect() {
     // fonction pour remplir le selecteur de fichier
-    let select = document.getElementById("selector");
     try {
         data = await fetchAsync(HOST + "/?all=true")
         let files = JSON.parse(data).filesObj;
@@ -102,7 +103,7 @@ async function populateSelect() {
             }
 
             if (optGroup.children.length > 0) {
-                select.appendChild(optGroup);
+                selectorHTML.appendChild(optGroup);
             }
         }
     } catch (e) {
@@ -110,18 +111,17 @@ async function populateSelect() {
         let opt = document.createElement("option");
         opt.value = "error";
         opt.innerHTML = "Couldn't load files...";
-        select.appendChild(opt);
+        selectorHTML.appendChild(opt);
     }
 }
 
 function getSelectedFile() {
     // fonction pour récuperer le fichier sélectionné
-    let select = document.getElementById("selector");
-    let selectedOption = select.selectedIndex == -1 ? 0 : select.selectedIndex;
-    let file = select.options[selectedOption].value;
+    let selectedOption = selectorHTML.selectedIndex == -1 ? 0 : selectorHTML.selectedIndex;
+    let file = selectorHTML.options[selectedOption].value;
     console.log(file)
 
-    let folder = select.options[selectedOption].parentNode.label
+    let folder = selectorHTML.options[selectedOption].parentNode.label
     if (!folder.endsWith("/")) folder += "/";
 
     return { filename: file, folder: folder };
@@ -132,15 +132,18 @@ async function changeFile() {
     console.log("changed file to " + document.getElementById("selector").value + " !");
     let file = getSelectedFile();
     chart.data(await getCSVData(HOST + file.folder + file.filename, nbwords));
+
+    window.location = window.location.origin + window.location.pathname + "?path=" + file.folder + "&file=" + file.filename;
+
     // disable fields
-    document.getElementById("nbwords").disabled = true;
-    document.getElementById("selector").disabled = true;
+    nbwordHTML.disabled = true;
+    selectorHTML.disabled = true;
 
     await chart.draw(true);
 
     // enable fields
-    document.getElementById("nbwords").disabled = false;
-    document.getElementById("selector").disabled = false;
+    nbwordHTML.disabled = false;
+    selectorHTML.disabled = false;
 }
 
 function updateNbWord(value) {
@@ -151,32 +154,61 @@ function updateNbWord(value) {
     changeFile();
 }
 
+function searchInSelector(path, filename) {
+    let options = selectorHTML.options;
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].parentNode.label == path && options[i].value == filename) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 async function ready() {
 
+    // init domVars
+    nbwordHTML = document.getElementById("nbwords");
+    selectorHTML = document.getElementById("selector");
+
     // disable fields
-    document.getElementById("nbwords").disabled = true;
-    document.getElementById("selector").disabled = true;
+    nbwordHTML.disabled = true;
+    selectorHTML.disabled = true;
 
     // fonction pour lancer le nuage de mots
     await populateSelect();
+
+    // get url params
+    let urlParams = new URLSearchParams(window.location.search);
+    let pathURL = urlParams.get("path");
+    let filenameURL = urlParams.get("file");
+
+    if (pathURL && filenameURL) {
+        let index = searchInSelector(pathURL, filenameURL);
+        if (index != -1) {
+            selectorHTML.selectedIndex = index;
+        }
+    }
+
     let path = getSelectedFile();
 
     // get initial val
-    nbwords = document.getElementById("nbwords").value;
+    nbwords = nbwordHTML.value;
     console.log(nbwords)
-    console.log(document.getElementById("nbwords").value);
 
 
     await drawChart(HOST + path.folder + path.filename, nbwords);
 
+    selectorHTML.addEventListener("change", () => {
+        changeFile();
+    });
+    nbwordHTML.addEventListener("change", ($event) => {
+        let value = $event.target.value;
+        updateNbWord(value);
+    });
+
     // enable fields
-    document.getElementById("nbwords").disabled = false;
-    document.getElementById("selector").disabled = false;
+    nbwordHTML.disabled = false;
+    selectorHTML.disabled = false;
 }
 
 document.addEventListener("DOMContentLoaded", ready);
-document.getElementById("selector").addEventListener("change", changeFile);
-document.getElementById("nbwords").addEventListener("change", ($event) => {
-    let value = $event.target.value;
-    updateNbWord(value);
-});
