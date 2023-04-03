@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 
 public class Stemming {
     /*
@@ -18,7 +18,7 @@ public class Stemming {
      * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
      * SAE2.02
      */
-    private static final Logger logger = LogManager.getLogger(Stemming.class);
+    //private static final Logger logger = LogManager.getLogger(Stemming.class);
 
     /**
      * Liste des voyelles utilisées dans l'algorithme de racinisation pour le

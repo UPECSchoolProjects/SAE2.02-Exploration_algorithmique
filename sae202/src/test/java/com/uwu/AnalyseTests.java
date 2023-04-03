@@ -13,7 +13,7 @@ import com.uwu.Stemming.Stemming;
  */
 public class AnalyseTests {
 
-    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomme", new AnalyseMot("pomme", 0.5, 2)),
+    Map<String, AnalyseMot> exceptedMap = Map.ofEntries(Map.entry("pomm", new AnalyseMot("pomme", 0.5, 2)),
             Map.entry("arbre", new AnalyseMot("arbre", 0.5, 2)));
 
     @Test
@@ -28,7 +28,12 @@ public class AnalyseTests {
             throw new RuntimeException(e);
         }
 
+
         for (Map.Entry<String, AnalyseMot> entry : map.entrySet()) {
+            System.out.println(entry.getKey());
+            System.out.println(entry.getKey() + " " + entry.getValue().getFrequence() + " " + entry.getValue().getOccurence());
+            if(!exceptedMap.containsKey(entry.getKey()))
+                throw new RuntimeException("La clé " + entry.getKey() + " n'est pas présente dans la map attendue");
             assertEquals(exceptedMap.get(entry.getKey()).getFrequence(),
                     entry.getValue().getFrequence(), 0);
             assertEquals(exceptedMap.get(entry.getKey()).getOccurence(),
