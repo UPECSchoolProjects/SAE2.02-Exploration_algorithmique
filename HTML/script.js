@@ -131,7 +131,6 @@ async function changeFile() {
     // fonction pour changer le fichier affiché
     console.log("changed file to " + document.getElementById("selector").value + " !");
     let file = getSelectedFile();
-    chart.data(await getCSVData(HOST + file.folder + file.filename, nbwords));
 
     updateURL(file.filename, file.folder);
 
@@ -139,18 +138,20 @@ async function changeFile() {
     nbwordHTML.disabled = true;
     selectorHTML.disabled = true;
 
-    await chart.draw(true);
+    await drawChart(HOST + file.folder + file.filename, nbwords);
 
     // enable fields
-    nbwordHTML.disabled = false;
-    selectorHTML.disabled = false;
+    setTimeout(() => {
+        nbwordHTML.disabled = false;
+        selectorHTML.disabled = false;
+    }, 100);
 }
 
 
 function updateURL(filename, path) {
     // change params in url
 
-    if(path.endsWith("/")) path = path.substring(0, path.length - 1);
+    if (path.endsWith("/")) path = path.substring(0, path.length - 1);
 
     let url = new URL(window.location.href);
     url.searchParams.set("file", filename);
