@@ -133,7 +133,7 @@ async function changeFile() {
     let file = getSelectedFile();
     chart.data(await getCSVData(HOST + file.folder + file.filename, nbwords));
 
-    window.location = window.location.origin + window.location.pathname + "?path=" + file.folder + "&file=" + file.filename;
+    updateURL(file.filename, file.folder);
 
     // disable fields
     nbwordHTML.disabled = true;
@@ -144,6 +144,15 @@ async function changeFile() {
     // enable fields
     nbwordHTML.disabled = false;
     selectorHTML.disabled = false;
+}
+
+
+function updateURL(filename, path) {
+    // change params in url
+    let url = new URL(window.location.href);
+    url.searchParams.set("file", filename);
+    url.searchParams.set("path", path);
+    window.location = url.toString();
 }
 
 function updateNbWord(value) {
