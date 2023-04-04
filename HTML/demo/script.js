@@ -1,8 +1,11 @@
-const HOST = "http://localhost:3000";
-let selectorHTML = null;
+const HOST = "https://sae202.nwo.ovh/api";
+// let selectorHTML = null;
+// let chart = null;
+// let container = null;
 let nbwordHTML = null;
-let chart = null;
 let nbwords = 15;
+let datas = null;
+let dataFiles = null;
 
 async function fetchAsync(url) {
     // fonction pour récuperer un fichier sur le serveur
@@ -46,41 +49,46 @@ async function getCSVData(dataURL, nbwords) {
     return chartSize(data, nbwords);
 }
 
-async function drawChart(dataURL, nbwords) {
+async function drawChart(dataURL, data, filename) {
     console.log(dataURL)
 
-    if (chart) {
-        chart.dispose();
+    if (data.chart) {
+        data.chart.dispose();
     }
-    document.getElementById("container").innerHTML = "";
+    data.chartContainer.innerHTML = "";
     // fonction pour créer le nuage de mots
     // create a tag (word) cloud chart
-    chart = anychart.tagCloud(await getCSVData(dataURL, nbwords));
+    data.chart = anychart.tagCloud(await getCSVData(dataURL, nbwords));
 
     // set a chart title
-    chart.title('Nuage de mots')
+    data.chart.title(filename)
     // set an array of angles at which the words will be laid out
-    chart.angles([0, 10, -10])
+    data.chart.angles([0, 10, -10])
     // enable a color range
     //chart.colorRange(true);
     // set the color range length
-    chart.tooltip().format(`Le mot "{%x}" apparait {%freq}% des fois ({%value} fois), sa racine est {%racine}`);
+    data.chart.tooltip().format(`Le mot "{%x}" apparait {%freq}% des fois ({%value} fois), sa racine est {%racine}`);
 
     // display the word cloud chart
-    chart.container("container");
-    chart.autoRedraw(false);
-    await chart.draw(true);
+    data.chart.container(data.chartContainer);
+    data.chart.autoRedraw(false);
+    await data.chart.draw(true);
 }
 
-async function populateSelect() {
+async function populateSelect(selectorHTML) {
     // fonction pour remplir le selecteur de fichier
     try {
-        data = await fetchAsync(HOST + "/?all=true")
-        let files = JSON.parse(data).filesObj;
+        if (dataFiles == null) {
+            dataFetched = await fetchAsync(HOST + "/?all=true")
+            dataFiles = JSON.parse(dataFetched).filesObj;
+        }
+
+        console.log("DDD : " + selectorHTML)
+        console.log("111 : " + data)
 
         //groupBy folder
         let folders = new Map();
-        for (file of files) {
+        for (file of dataFiles) {
             let folder = file.folder;
             if (!folders.has(folder)) {
                 folders.set(folder, []);
@@ -113,10 +121,14 @@ async function populateSelect() {
         opt.innerHTML = "Couldn't load files...";
         selectorHTML.appendChild(opt);
     }
+
+    console.log("EEE : " + selectorHTML)
 }
 
-function getSelectedFile() {
+function getSelectedFile(selectorHTML) {
+    console.log('333 : ' + selectorHTML)
     // fonction pour récuperer le fichier sélectionné
+    console.log("SelectorHTML :" + selectorHTML)
     let selectedOption = selectorHTML.selectedIndex == -1 ? 0 : selectorHTML.selectedIndex;
     let file = selectorHTML.options[selectedOption].value;
     console.log(file)
@@ -127,37 +139,36 @@ function getSelectedFile() {
     return { filename: file, folder: folder };
 }
 
-async function changeFile() {
-    // fonction pour changer le fichier affiché
-    console.log("changed file to " + document.getElementById("selector").value + " !");
-    let file = getSelectedFile();
+async function changeFile(nbData) {
+    // fonction pour changer le fichier affiche
+    let data = datas.get(nbData);
+    let file = getSelectedFile(data.selectorHTML);
 
-    updateURL(file.filename, file.folder);
+    updateURL(file.filename, file.folder, nbData);
 
     // disable fields
     nbwordHTML.disabled = true;
-    selectorHTML.disabled = true;
+    data.selectorHTML.disabled = true;
 
-    await drawChart(HOST + file.folder + file.filename, nbwords);
+    await drawChart(HOST + file.folder + file.filename, data, file.filename.substring(0, file.filename.length - 4));
 
     // enable fields
     nbwordHTML.disabled = false;
-    selectorHTML.disabled = false;
+    data.selectorHTML.disabled = false;
 }
 
 
-function updateURL(filename, path) {
+function updateURL(filename, path, nbData) {
     // change params in url
 
     if (path.endsWith("/")) path = path.substring(0, path.length - 1);
 
     let url = new URL(window.location.href);
-    url.searchParams.set("file", filename);
-    url.searchParams.set("path", path);
+    url.searchParams.set("file" + nbData, filename);
+    url.searchParams.set("path" + nbData, path);
     url.searchParams.set("nbwords", nbwords);
     console.log(url.toString());
-    let state = { filename: filename, path: path, nbwords: nbwords };
-    window.history.pushState(state, "", url.toString());
+    window.history.pushState(null, "", url.toString());
 }
 
 function updateNbWord(value) {
@@ -165,10 +176,14 @@ function updateNbWord(value) {
     if (isNaN(value) || value == "") return;
     console.log("changed nbwords to " + value + " !");
     nbwords = value;
-    changeFile();
+    // index of all chart
+    for (let [index, data] of datas) {
+        changeFile(index);
+    }
+
 }
 
-function searchInSelector(path, filename) {
+function searchInSelector(path, filename, selectorHTML) {
     let options = selectorHTML.options;
     for (let i = 0; i < options.length; i++) {
         if (options[i].parentNode.label == path && options[i].value == filename) {
@@ -180,29 +195,39 @@ function searchInSelector(path, filename) {
 
 async function ready() {
 
-    // init domVars
+
+    let aSeul = document.getElementById("seul");
+    let multi = document.getElementById("multi");
+
+    // event on a redirect with params
+    aSeul.addEventListener("click", ($event) => {
+        $event.preventDefault();
+        // redirect with params
+        let params = window.location.search;
+
+
+        // fiile to redirect is seul.html
+        window.location.href = "seul.html" + params;
+    });
+
+    multi.addEventListener("click", ($event) => {
+        $event.preventDefault();
+        // redirect with params
+        let params = window.location.search;
+        // fiile to redirect is comparaison.html
+        window.location.href = "comparaison.html" + params;
+    });
+
+
+
+    datas = new Map()
+
     nbwordHTML = document.getElementById("nbwords");
-    selectorHTML = document.getElementById("selector");
 
-    // disable fields
-    nbwordHTML.disabled = true;
-    selectorHTML.disabled = true;
+    console.log("AAA : " + nbwordHTML)
 
-    // fonction pour lancer le nuage de mots
-    await populateSelect();
-
-    // get url params
     let urlParams = new URLSearchParams(window.location.search);
-    let pathURL = urlParams.get("path");
-    let filenameURL = urlParams.get("file");
     let nbwordsURL = urlParams.get("nbwords");
-
-    if (pathURL && filenameURL) {
-        let index = searchInSelector(pathURL, filenameURL);
-        if (index != -1) {
-            selectorHTML.selectedIndex = index;
-        }
-    }
 
     if (nbwordsURL) {
         if (!isNaN(nbwordsURL)) {
@@ -211,26 +236,74 @@ async function ready() {
         }
     }
 
-    let path = getSelectedFile();
 
     // get initial val
     nbwords = nbwordHTML.value;
     console.log(nbwords)
 
-
-    await drawChart(HOST + path.folder + path.filename, nbwords);
-
-    selectorHTML.addEventListener("change", () => {
-        changeFile();
-    });
     nbwordHTML.addEventListener("change", ($event) => {
         let value = $event.target.value;
         updateNbWord(value);
     });
 
+    await initContainer("chart0", "selector0", 0);
+    if (document.getElementById("chart1") != null) {
+        await initContainer("chart1", "selector1", 1);
+    }
+}
+
+async function initContainer(chartContainerId, selecterHTMLId, nb) {
+    data = {
+        chartContainer: document.getElementById(chartContainerId),
+        selectorHTML: document.getElementById(selecterHTMLId),
+        chart: null,
+    }
+
+    console.log(data)
+
+    // disable fields
+    nbwordHTML.disabled = true;
+    data.selectorHTML.disabled = true;
+
+    // fonction pour lancer le nuage de mots
+
+    console.log("CCCC :" + data.selectorHTML)
+
+    await populateSelect(data.selectorHTML);
+
+    console.log("BBBB :" + data.selectorHTML)
+
+    // get url params
+    let urlParams = new URLSearchParams(window.location.search);
+    let pathURL = urlParams.get("path" + nb);
+    let filenameURL = urlParams.get("file" + nb);
+
+    console.log("pathURL" + nb + " :" + pathURL)
+    console.log("filenameURL" + nb + " :" + filenameURL)
+
+    if (pathURL && filenameURL) {
+        let index = searchInSelector(pathURL, filenameURL, data.selectorHTML);
+        if (index != -1) {
+            data.selectorHTML.selectedIndex = index;
+        }
+    }
+
+
+    console.log("AAAA :" + data.selectorHTML)
+    let path = getSelectedFile(data.selectorHTML);
+
+
+    await drawChart(HOST + path.folder + path.filename, data, path.filename.substring(0, path.filename.length - 4));
+
+    data.selectorHTML.addEventListener("change", () => {
+        changeFile(nb);
+    });
+
     // enable fields
     nbwordHTML.disabled = false;
-    selectorHTML.disabled = false;
+    data.selectorHTML.disabled = false;
+
+    datas.set(nb, data);
 }
 
 document.addEventListener("DOMContentLoaded", ready);

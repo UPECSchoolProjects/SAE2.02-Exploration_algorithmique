@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
     <style>
         body {
             font-family: "Lato", sans-serif
@@ -19,7 +21,6 @@
 
         #container {
             width: 100%;
-            margin: 0 auto;
             height: 80vh;
         }
 
@@ -46,6 +47,37 @@
             font-weight: bold;
             margin-right: 1em;
         }
+
+        #chartContainer {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            width: 100vw;
+            height: 80%;
+        }
+
+        #selecteurcomparasion {
+            position: absolute;
+            top: 120px;
+            right: 5%
+        }
+
+        #selecteurcomparasion a {
+            /* reset */
+            text-decoration: none;
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+            border: 1px solid black;
+            border-radius: 3px;
+            padding: .3em;
+        }
+
+        #selecteurcomparasion a:nth-child(2) {
+            background-color: #6e6e6e;
+            color: white;
+        }
     </style>
 </head>
 
@@ -57,11 +89,11 @@
             <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
                 href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
                     class="fa fa-bars"></i></a>
-            <a href="./index.html#" class="w3-bar-item w3-button w3-padding-large">HOME</a>
-            <a href="./index.html#band" class="w3-bar-item w3-button w3-padding-large w3-hide-small">PROJET</a>
-            <a href="./index.html#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">FONCTIONNALITÉ</a>
-            <a href="./index.html#contact" class="w3-bar-item w3-button w3-padding-large w3-hide-small">MEMBRE</a>
-            <a href="./Demo.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">DEMO</a>
+            <a href="../index.html#" class="w3-bar-item w3-button w3-padding-large">HOME</a>
+            <a href="../index.html#band" class="w3-bar-item w3-button w3-padding-large w3-hide-small">PROJET</a>
+            <a href="../index.html#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">FONCTIONNALITÉ</a>
+            <a href="../index.html#contact" class="w3-bar-item w3-button w3-padding-large w3-hide-small">MEMBRE</a>
+            <a href="./seul.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">DEMO</a>
             <a href="javascript:void(0)" class="w3-padding-large w3-hover-red w3-hide-small w3-right"><i
                     class="fa fa-search"></i></a>
         </div>
@@ -69,29 +101,64 @@
 
     <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
     <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
-        <a href="./index.html#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">PROJET</a>
-        <a href="./index.html#tour" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">FONCTIONNALITÉ</a>
-        <a href="./index.html#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MEMBRE</a>
-        <a href="./Demo.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">DEMO</a>
+        <a href="../index.html#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">PROJET</a>
+        <a href="../index.html#tour" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">FONCTIONNALITÉ</a>
+        <a href="../index.html#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MEMBRE</a>
+        <a href="./seul.html" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">DEMO</a>
+    </div>
+
+    <div id="selecteurcomparasion">
+        <a id="seul">Seul</a>
+        <a id="multi">Comparaison</a>
     </div>
 
     <!-- Page content -->
-    <div class="w3-content" style="max-width:80%;margin-top:46px">
+    <div id="container" class="w3-content" style="max-width:100%;margin-top:46px">
         <center id="controlContainer">
             <h1 id="title">DEMONSTRATION</h1>
             <div>
-                <label for="selector">Selection du jeu de données :</label>
-                <select id="selector">
-                </select>
+                <div>
+                    <label for="selector0">Selection du jeu de données 1 :</label>
+                    <select id="selector0" class="selector">
+                    </select>
+                </div>
+                <div>
+                    <label for="selector1">Selection du jeu de données 2 :</label>
+                    <select id="selector1" class="selector">
+                    </select>
+                </div>
             </div>
             <div>
-                <label for="number">Nombre de mots à afficher :</label>
+                <label for="nbwords">Nombre de mots à afficher :</label>
                 <input type="number" id="nbwords" value="15" min="1" max="1000" step="1">
             </div>
         </center>
         </select>
-        <div id="container"></div>
+        <div id="chartContainer">
+            <div id="chart0" style="width:100%"></div>
+            <div id="chart1" style="width:100%"></div>
+        </div>
     </div>
+
+    <py-config>
+        [[fetch]]
+        files = ["/request.py"]
+    </py-config>
+
+    <py-script>
+        import asyncio
+        import json
+        from request import request # import our request function.
+
+        async def main():
+        baseurl = "https://sae202.nwo.ovh/api" # base url of the API
+
+        # GET
+        headers = {"Content-type": "application/json"}
+        response = await request(f"{baseurl}/cauchemar_innsmouth.csv", method="GET", headers=headers)
+        print(f"GET request=> status:{response.status}, json:{await response.json()}")
+    </py-script>
 
     <!-- End Page Content -->
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
