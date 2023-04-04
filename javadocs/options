@@ -1,0 +1,25 @@
+-classpath
+'C:/Users/Maxpi/.m2/repository/org/apache/pdfbox/pdfbox/2.0.27/pdfbox-2.0.27.jar;C:/Users/Maxpi/.m2/repository/org/apache/pdfbox/fontbox/2.0.27/fontbox-2.0.27.jar;C:/Users/Maxpi/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar;C:/Users/Maxpi/.m2/repository/org/apache/logging/log4j/log4j-api/2.20.0/log4j-api-2.20.0.jar;C:/Users/Maxpi/.m2/repository/org/apache/logging/log4j/log4j-core/2.20.0/log4j-core-2.20.0.jar;C:/Users/Maxpi/.m2/repository/commons-cli/commons-cli/1.5.0/commons-cli-1.5.0.jar'
+-encoding
+'UTF-8'
+-private
+-source
+'17'
+-sourcepath
+'C:/Users/Maxpi/Documents/GitHub/SAE2.02-Exploration_algorithmique/sae202/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2023. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/Maxpi/Documents/GitHub/SAE2.02-Exploration_algorithmique/sae202/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'sae202 1.0-SNAPSHOT API'
+-nohelp
+-use
+-version
+-windowtitle
+'sae202 1.0-SNAPSHOT API'

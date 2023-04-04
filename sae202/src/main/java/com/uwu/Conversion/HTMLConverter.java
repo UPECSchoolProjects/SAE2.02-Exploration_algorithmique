@@ -16,9 +16,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
+import com.uwu.FileObj;
 import com.uwu.Conversion.HTMLParser.DOMSelecter;
 import com.uwu.Conversion.HTMLParser.HTMLElement;
 
+/**
+ * Convertisseur HTML vers texte
+ * Fait sans utiliser de librairie externe ni d'objet JAVA pré-existant
+ * 
+ * Analyse le fichier HTML ligne par ligne et construit un arbre DOM à partir
+ * d'un stack
+ * 
+ * @author Maxime LOTTO
+ */
 public class HTMLConverter implements IConverter {
     private static final Logger logger = LogManager.getLogger(HTMLConverter.class);
 
@@ -47,38 +57,28 @@ public class HTMLConverter implements IConverter {
 
     public static final Pattern TagNameRegex = Pattern.compile("</?([^> /]+)", Pattern.MULTILINE);
 
-    public String fileName;
-    public String inputPath;
-    public String filenameWithoutExtension;
+    public FileObj file;
+
     public String classText;
+    public String keyText;
     public String outputPath;
     private String outputPathURL;
-    private String fileURL;
 
-    public HTMLConverter(String inputPath, String fileName, String outputPath, String classText) {
-        this.fileName = fileName;
-        this.inputPath = inputPath == null ? "" : inputPath;
-        this.outputPath = outputPath == null ? "" : outputPath;
-        this.classText = classText;
-        
-        this.filenameWithoutExtension = fileName.substring(0, fileName.lastIndexOf("."));
-        this.outputPathURL = this.outputPath + this.filenameWithoutExtension + "-parsed.txt";
-        this.fileURL = this.inputPath + this.fileName;
+    /**
+     * Constructeur de la classe HTMLConverter
+     * @param file Fichier à convertir (FileObj)
+     * @param outputPath dossier de sortie
+     * @param classText classe de texte à utiliser
+     */
+    public HTMLConverter(FileObj file, String outputPath, String keyText,String classText) {
+        this.file = file;
+        this.classText = classText == null ? "text" : classText;
+        this.keyText = keyText == null ? "class" : keyText;
+        this.outputPath = outputPath;
 
-        // check if the file exists
-        File file = new File(this.fileURL);
-        if (!file.exists()) {
-            //throw new IllegalArgumentException("File " + this.fileURL + " does not exist");
-            // create a new file
-            // create dirs
-            File dir = new File(this.inputPath);
-            dir.mkdirs();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        this.outputPathURL = this.outputPath + this.file.getNameWithAnotherExt("txt");
+        logger.debug("New HTMLConverter created for file " + this.file.getName() + " with output path "
+                + this.outputPathURL + " and classText " + this.classText + " and keyText " + this.keyText);
     }
 
     @Override
@@ -100,13 +100,17 @@ public class HTMLConverter implements IConverter {
         }
     }
 
+    /**
+     * Lit le fichier HTML et le retourne sous forme de String
+     * @return String contenant le fichier HTML
+     */
     public String readFile() {
         /*
          * Cette fonction lit le fichier HTML ligne par ligne et le convertit en String
          */
         // Ouvre le fichier HTML en utilisant un BufferedReader pour lire ligne par
         // ligne
-        try (final BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
+        try (final BufferedReader br = new BufferedReader(new FileReader(this.file.getFullPath()))) {
             final StringBuilder sb = new StringBuilder();
 
             // ligne nb est utilisé pour le debug, pour mesurer l'avancement
@@ -133,6 +137,7 @@ public class HTMLConverter implements IConverter {
             String everything = sb.toString();
             // on supprime les commentaires HTML, ils ne sont pas utiles pour le traitement
             everything = htmlCommentRegex.matcher(everything).replaceAll("");
+            everything.replaceAll("<!DOCTYPE html>", "");
             return everything;
         } catch (IOException e) {
             e.printStackTrace();
@@ -140,14 +145,21 @@ public class HTMLConverter implements IConverter {
         }
     }
 
+    /**
+     * Cette fonction recupere tout le texte contenu dans la balise qui a la classe this.classText dans le fichier HTML
+     * Elle ne prends aucun parametre et retourne un String
+     * @return String contenant le texte du fichier HTML sans les balises
+     */
     public String getText() {
         /*
-         * Cette fonction recupere toutes les balise de l'HTML, et en extrait le texte ELle est
+         * Cette fonction recupere toutes les balise de l'HTML, et en extrait le texte
+         * ELle est
          * spécifique à WikiSource
          */
         final ArrayList<HTMLElement> elements = Parser();
         final DOMSelecter selecter = new DOMSelecter(elements);
-        final HTMLElement el = selecter.selectFirst("class", this.classText);
+        final HTMLElement el = selecter.selectFirst(this.keyText, this.classText);
+        logger.debug("Founded element with class " + this.classText + " and key " + this.keyText + " : " + el);
         if (el == null)
             return "";
         final StringBuilder sb = new StringBuilder();
@@ -156,6 +168,12 @@ public class HTMLConverter implements IConverter {
             logger.debug(child.tag);
             if (child.tag.equals("p")) {
                 sb.append(child.getInnerText());
+            } else {
+                for (HTMLElement child2 : child.children) {
+                    if (child2.tag.equals("p")) {
+                        sb.append(child2.getInnerText());
+                    }
+                }
             }
         }
 
@@ -163,24 +181,36 @@ public class HTMLConverter implements IConverter {
                 .replaceAll("\\s+", " ").replaceAll("\t", "");
     }
 
+    /**
+     * Cette fonction permet de parser le fichier HTML et de retourner une liste
+     * d'HTMLElement
+     * (classe définie dans le package com.uwu.Conversion.HTMLParser) ELle utilise
+     * un stack pour
+     * gérer les balises ouvertes et fermées Elle lis les caractères un par un et
+     * les ajoute
+     * dans le outerHTML de toutes les balises qui n'ont pas encore été fermée Une
+     * fois qu'une
+     * balise est fermée, celà veut dire que le contenu de la balise est terminé, on
+     * peut donc
+     * l'ajouter à la liste de balise et la sortir du stack De plus on ajoute la
+     * balise fermante
+     * à la liste des enfants de la balise juste au dessus dans la hierachie
+     * 
+     * Cette fonction est la forme la plus simple que pourrait prendre un parser
+     * HTML, il y a
+     * beaucoup de choses à améliorer Néanmoins, il est plus que suffisant pour
+     * notre projet.
+     * (il ne garde pas dans tout les cas la mise en forme du texte)
+     * 
+     * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer
+     * un défi
+     * personnel et de faire un parser HTML basique en Java, c'était assez amusant à
+     * faire
+     * (Maxime LOTTO)
+     * 
+     * @return une liste d'HTMLElement
+     */
     public ArrayList<HTMLElement> Parser() {
-        /*
-         * Cette fonction permet de parser le fichier HTML et de retourner une liste d'HTMLElement
-         * (classe définie dans le package com.uwu.Conversion.HTMLParser) ELle utilise un stack pour
-         * gérer les balises ouvertes et fermées Elle lis les caractères un par un et les ajoute
-         * dans le outerHTML de toutes les balises qui n'ont pas encore été fermée Une fois qu'une
-         * balise est fermée, celà veut dire que le contenu de la balise est terminé, on peut donc
-         * l'ajouter à la liste de balise et la sortir du stack De plus on ajoute la balise fermante
-         * à la liste des enfants de la balise juste au dessus dans la hierachie
-         * 
-         * Cette fonction est la forme la plus simple que pourrait prendre un parser HTML, il y a
-         * beaucoup de choses à améliorer Néanmoins, il est plus que suffisant pour notre projet.
-         * (il ne garde pas dans tout les cas la mise en forme du texte)
-         * 
-         * J'aurais pu utiliser un parser HTML existant, mais j'avais envie de me lancer un défi
-         * personnel et de faire un parser HTML basique en Java, c'était assez amusant à faire
-         * (Maxime LOTTO)
-         */
 
         char[] content = readFile().toCharArray();
         int error = 0;
@@ -193,7 +223,6 @@ public class HTMLConverter implements IConverter {
         int i = 0;
         while (i < content.length) {
             char c = content[i];
-            
 
             // si on tombe sur une balise on la traite
             if (!(c == '<')) {
@@ -229,7 +258,7 @@ public class HTMLConverter implements IConverter {
                     continue;
                 }
 
-                logger.debug("Balise : " + tagName);
+                logger.trace("Balise : " + tagName);
 
                 // si la balise est une balise non autofermante, on la traite
                 if (balisesNonAutofermantes.contains(tagName)) {
@@ -283,6 +312,12 @@ public class HTMLConverter implements IConverter {
         return elements;
     }
 
+    /**
+     * Fonction qui permet d'écrire le contenu de tous les HTMLElement dans un
+     * fichier
+     * ? Pour le débug
+     * @param elements
+     */
     public void debugWriteAllHTML(final ArrayList<HTMLElement> elements) {
         final StringBuilder content = new StringBuilder();
         for (final HTMLElement element : elements) {
@@ -300,6 +335,11 @@ public class HTMLConverter implements IConverter {
         }
     }
 
+    /**
+     * Renvoie le nom d'une balise (tag) à partir de ce qu'il y'a entre les deuw < >
+     * @param balise la balise par exemple <p class="test"> renvoie p
+     * @return le nom de la balise
+     */
     public String getTagName(final String balise) {
         final Matcher tagNameMatcher = TagNameRegex.matcher(balise);
         if (tagNameMatcher.find()) {

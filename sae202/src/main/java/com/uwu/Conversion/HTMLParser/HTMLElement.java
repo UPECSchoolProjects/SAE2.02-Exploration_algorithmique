@@ -5,15 +5,22 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class HTMLElement {
     /*
-     * Cette classe représente une balise HTML. Elle contient les attributs de la balise, son
+     * Cette classe représente une balise HTML. Elle contient les attributs de la
+     * balise, son
      * contenu, ses enfants, etc.
      * 
      * Elle est utilisée par le parser HTML pour créer un arbre DOM.
      * 
-     * /!\ je crois qu'il y'a déjà une classe HTMLElement dans Java, mais je ne l'ai pas utilisée 
+     * /!\ je crois qu'il y'a déjà une classe HTMLElement dans Java, mais je ne l'ai
+     * pas utilisée
      */
+    private static final Logger logger = LogManager.getLogger(HTMLElement.class);
+
     public static final Pattern AttributesRegex = Pattern.compile("([^=]+=[\"'][^\"|\']*[\"'])");
     public String tag; // nom de la balise (sans les < et >)
     public boolean isSelfClosing; // si la balise est auto fermante (inline)
@@ -31,6 +38,14 @@ public class HTMLElement {
         this.children = new ArrayList<HTMLElement>();
 
         this.parseAttributes(); // parse les attributs de la balise avec tout plein de regex
+
+        if(this.tag.equals("div")) {
+            logger.debug(this.tag);
+            for (String key : this.attributes.keySet()) {
+                logger.debug(key + " : " + this.attributes.get(key));
+            }
+        }
+  
     }
 
     public String toString() {
@@ -76,7 +91,8 @@ public class HTMLElement {
     }
 
     public String getInnerText() {
-        // cette fonction retourne le texte contenu dans la balise sans tout l'html imbriqué
+        // cette fonction retourne le texte contenu dans la balise sans tout l'html
+        // imbriqué
         return this.outerHTML.replaceAll("<[^>]*>", "").trim();
     }
 
@@ -84,13 +100,11 @@ public class HTMLElement {
         return this.outerHTML;
     }
 
-
     public void parseAttributes() {
         // cette fonction parse les attributs de la balise avec des regex
 
-        // enleve le nom du tag par exemple <div id="b" class="a"> => id="b" class="a" 
-        final String withoutTag =
-                this.outerHTML.substring(this.tag.length() + 1, this.outerHTML.indexOf('>')).trim();
+        // enleve le nom du tag par exemple <div id="b" class="a"> => id="b" class="a"
+        final String withoutTag = this.outerHTML.substring(this.tag.length() + 1, this.outerHTML.indexOf('>')).trim();
         // System.out.println("Without tag: " + withoutTag);
         final Matcher attributesMatcher = AttributesRegex.matcher(withoutTag);
         while (attributesMatcher.find()) {
