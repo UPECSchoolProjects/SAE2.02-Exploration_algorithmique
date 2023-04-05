@@ -6,6 +6,9 @@ let nbwordHTML = null;
 let nbwords = 15;
 let datas = null;
 let dataFiles = null;
+let cosineSimHTML = null;
+let lentxt1 = null;
+let lentxt2 = null;
 
 async function fetchAsync(url) {
     // fonction pour récuperer un fichier sur le serveur
@@ -73,6 +76,7 @@ async function drawChart(dataURL, data, filename) {
     data.chart.container(data.chartContainer);
     data.chart.autoRedraw(false);
     await data.chart.draw(true);
+    await compareText();
 }
 
 async function populateSelect(selectorHTML) {
@@ -236,6 +240,10 @@ async function ready() {
         }
     }
 
+    cosineSimHTML = document.getElementById("cosine");
+    lentxt1 = document.getElementById("len1");
+    lentxt2 = document.getElementById("len2");
+
 
     // get initial val
     nbwords = nbwordHTML.value;
@@ -250,6 +258,8 @@ async function ready() {
     if (document.getElementById("chart1") != null) {
         await initContainer("chart1", "selector1", 1);
     }
+
+    await compareText();
 }
 
 async function initContainer(chartContainerId, selecterHTMLId, nb) {
@@ -257,6 +267,7 @@ async function initContainer(chartContainerId, selecterHTMLId, nb) {
         chartContainer: document.getElementById(chartContainerId),
         selectorHTML: document.getElementById(selecterHTMLId),
         chart: null,
+        currentString: null
     }
 
     console.log(data)
@@ -304,6 +315,43 @@ async function initContainer(chartContainerId, selecterHTMLId, nb) {
     data.selectorHTML.disabled = false;
 
     datas.set(nb, data);
+}
+
+async function compareText() {
+    console.log('Compare text')
+    console.log(datas.size)
+    // if two datas
+    if (datas.size != 2) return;
+
+    // fetch text 1
+    let data1 = datas.get(0);
+    let file1 = getSelectedFile(data1.selectorHTML);
+    let filename1 = file1.filename.substring(0, file1.filename.length - 4);
+
+    // fetch text 2
+    let data2 = datas.get(1);
+    let file2 = getSelectedFile(data2.selectorHTML);
+    let filename2 = file2.filename.substring(0, file2.filename.length - 4);
+
+
+    let strTxt1 = await fetchAsync(HOST + file1.folder + filename1 + ".txt");
+    let strTxt2 = await fetchAsync(HOST + file2.folder + filename2 + ".txt");
+
+    //cosine_simularity_py = pyscript.interpreter.globals.get('cosine_simularity_py') 
+    //let result = await cosine_simularity_py(strTxt1, strTxt2);
+    cosine_simularity_py = pyscript.interpreter.globals.get('cosine_simularity_py') 
+    let result = await cosine_simularity_py(strTxt1, strTxt2);
+
+    let reslentxt1 = strTxt1.split(" ").length;
+    let reslentxt2 = strTxt2.split(" ").length;
+
+    cosineSimHTML.innerHTML = result;
+    lentxt1.innerHTML = reslentxt1;
+    lentxt2.innerHTML = reslentxt2;
+
+
+    console.log(cosineSimHTML)
+    console.log(lentxt1);
 }
 
 document.addEventListener("DOMContentLoaded", ready);

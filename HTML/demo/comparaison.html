@@ -56,6 +56,20 @@
             height: 80%;
         }
 
+        #data {
+            font-size: 1.5em;
+            margin: 0 10%;
+            width: 80%;
+            border-collapse: collapse;
+        }
+        
+        #data td, #data th {
+            font-size: 1.1em;
+            text-align: left;
+            border: 1px solid #ddd;
+            padding: 1em;
+        }
+
         #selecteurcomparasion {
             position: absolute;
             top: 120px;
@@ -139,25 +153,33 @@
             <div id="chart0" style="width:100%"></div>
             <div id="chart1" style="width:100%"></div>
         </div>
+        <table id="data">
+            <tr>
+                <th>Nombre de mots du texte 1</th>
+                <th>Cosine simularity des textes</th>
+                <th>Nombre de mots du texte 2</th>
+            </tr>
+            <tr>
+                <td id="len1">... mots</td>
+                <td id="cosine">...</td>
+                <td id="len2">... mots</td>
+            </tr>
+        </table>
     </div>
 
     <py-config>
-        [[fetch]]
-        files = ["/request.py"]
+        packages = ["scikit-learn"]
     </py-config>
 
     <py-script>
-        import asyncio
-        import json
-        from request import request # import our request function.
-
-        async def main():
-        baseurl = "https://sae202.nwo.ovh/api" # base url of the API
-
-        # GET
-        headers = {"Content-type": "application/json"}
-        response = await request(f"{baseurl}/cauchemar_innsmouth.csv", method="GET", headers=headers)
-        print(f"GET request=> status:{response.status}, json:{await response.json()}")
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        
+        vectorizer = TfidfVectorizer()# Initialize the vectorizer
+        
+        def cosine_simularity_py(txt1, txt2):
+            speeches_vectors = vectorizer.fit_transform([txt1,txt2]) # Create the vectors for the two speeches
+            return cosine_similarity(speeches_vectors)[0][1]  
     </py-script>
 
     <!-- End Page Content -->
