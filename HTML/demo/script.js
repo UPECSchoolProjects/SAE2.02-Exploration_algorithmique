@@ -355,3 +355,7 @@ async function compareText() {
 }
 
 document.addEventListener("DOMContentLoaded", ready);
+
+window.onpopstate = function(e) {
+    window.location.reload();
+};
