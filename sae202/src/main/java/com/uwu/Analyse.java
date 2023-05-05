@@ -43,6 +43,10 @@ public class Analyse {
     private String filePath;
     private String motVidePath;
     private Stemming stemming;
+    private boolean addTxt; // si il faut fichier txt avec le texte nettoyé (sans mots vides, sans ponctuation, etc.)
+    private String addTxtPath; // chemin du fichier txt avec le texte nettoyé 
+    // les variables addTxt et addTxtPath sont soit tous les deux null, soit tous les deux non null grâce à la fonction
+    // setAddTxt qui est la seule à pouvoir les modifier (en dehors de la classe elle-même)
 
     public Analyse(String filePath, List<String> motVide, Stemming stemming) {
         this.filePath = filePath;
@@ -55,7 +59,8 @@ public class Analyse {
         }
 
         this.motsVides = motVide == null ? new ArrayList<String>() : motVide;
-
+        this.addTxt = false;
+        this.addTxtPath = null;
     }
 
     // public Analyse(String filePath) {
@@ -132,6 +137,13 @@ public class Analyse {
         Map<String, Map<String, Integer>> compteurMotDominantDansRacine = new HashMap<String, Map<String, Integer>>();
         int nbMot = 0;
         Map<String, Integer> compteur = new HashMap<>();
+
+        StringBuilder listmot = null;
+
+        if(this.addTxt) {
+            listmot = new StringBuilder();
+        }
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
                 new FileInputStream(filePath), "UTF-8"))) { // Ouvre le fichier
             String ligne;
@@ -164,6 +176,10 @@ public class Analyse {
                         nbMot++;
                         compteur.put(motRacine, compteur.getOrDefault(motRacine, 0) + 1); // Incrémente la fréquence du
                         // mot
+
+                        if(listmot != null) {
+                            listmot.append(mot).append(" ");
+                        }
                     }
                 }
             }
@@ -181,6 +197,12 @@ public class Analyse {
                         + entry.getValue() / ((double) nbMot));
             }
         }
+
+        if(this.addTxt) {
+            logger.info("Ecriture du fichier cleaned txt");
+            this.writeAddTxt(listmot.toString(), this.addTxtPath);
+        }
+
         return analyseMap;
     }
 
@@ -217,5 +239,17 @@ public class Analyse {
                 writer.append("\n");
             }
         }
+    }
+
+    public void writeAddTxt(String text, String filePath) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(filePath, true), StandardCharsets.UTF_8))) {
+            writer.append(text);
+        }
+    }
+
+    public void setAddTxt(boolean addTxt, String TxtfilePath) {
+        this.addTxt = addTxt;
+        this.addTxtPath = TxtfilePath;
     }
 }
