@@ -15,6 +15,7 @@ public enum CLIOptions {
     MOTS_VIDE_PATH("m", "motsVidePath", NbArgs.ONE, "Chemin vers le fichier motsVide.txt", false),
     CLASS_TEXT("c", "classText", NbArgs.ONE, "Classe de texte à traiter (pour fichier HTML). par défaut \"text\"", false),
     KEY_TEXT("k", "keyText", NbArgs.ONE, "Attribut ou chercher la classe. par défaut \"class\"", false),
+    NO_ADD_TXT("ntxt", "NoaddTxt", NbArgs.NONE, "n'ajoute pas les mots après traitement dans un txt au même endroit que la sortie de l'analyse", false),
     VERBOSE("v", "verbose", NbArgs.NONE, "Affiche les logs de debug", false),
     EXTRA_VERBOSE("vv", "extraVerbose", NbArgs.NONE, "Affiche les logs de trace", false);
 

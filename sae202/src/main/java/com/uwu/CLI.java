@@ -315,6 +315,12 @@ public class CLI {
 
     public void analyeurClI(FileObj file) {
         Analyse analyseur = new Analyse(file.getFullPath(), this.motsVide, stemming);
+
+        // la valeur par défaut est true, donc si l'option n'est pas spécifiée, on met à true addTxt
+        if(!this.cmd.hasOption(CLIOptions.NO_ADD_TXT.getShortOpt())) {
+            analyseur.setAddTxt(true, this.analysisOutDir + file.getFilenameWithoutExtension() + "-cleaned.txt");
+        }
+
         File csvFile = null;
         try {
             csvFile = new File(analysisOutDir + file.getNameWithAnotherExt("csv"));
