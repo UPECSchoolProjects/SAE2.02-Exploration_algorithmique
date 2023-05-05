@@ -7,6 +7,7 @@ let nbwords = 15;
 let datas = null;
 let dataFiles = null;
 let cosineSimHTML = null;
+let nbMotCommunHTML = null;
 let lentxt1 = null;
 let lentxt2 = null;
 
@@ -241,6 +242,7 @@ async function ready() {
     }
 
     cosineSimHTML = document.getElementById("cosine");
+    nbMotCommunHTML = document.getElementById("nbmotCommun");
     lentxt1 = document.getElementById("len1");
     lentxt2 = document.getElementById("len2");
 
@@ -334,23 +336,26 @@ async function compareText() {
     let filename2 = file2.filename.substring(0, file2.filename.length - 4);
 
 
-    let strTxt1 = await fetchAsync(HOST + file1.folder + filename1 + ".txt");
-    let strTxt2 = await fetchAsync(HOST + file2.folder + filename2 + ".txt");
+    let strTxt1 = await fetchAsync(HOST + file1.folder + filename1 + "-cleaned.txt");
+    let strTxt2 = await fetchAsync(HOST + file2.folder + filename2 + "-cleaned.txt");
 
     //cosine_simularity_py = pyscript.interpreter.globals.get('cosine_simularity_py') 
     //let result = await cosine_simularity_py(strTxt1, strTxt2);
-    cosine_simularity_py = pyscript.interpreter.globals.get('cosine_simularity_py') 
+    cosine_simularity_py = pyscript.interpreter.globals.get('cosine_simularity_py');
+    nb_mot_py = pyscript.interpreter.globals.get('nb_mot_py');
     let result = await cosine_simularity_py(strTxt1, strTxt2);
+    let nbmotcommun = await nb_mot_py(strTxt1, strTxt2);
 
     let reslentxt1 = strTxt1.split(" ").length;
     let reslentxt2 = strTxt2.split(" ").length;
 
     cosineSimHTML.innerHTML = result;
-    lentxt1.innerHTML = reslentxt1;
-    lentxt2.innerHTML = reslentxt2;
+    nbMotCommunHTML.innerHTML = nbmotcommun + ' mots';
+    lentxt1.innerHTML = reslentxt1 + ' mots';
+    lentxt2.innerHTML = reslentxt2 + ' mots';
 
 
-    console.log(cosineSimHTML)
+    console.log(cosineSimHTML);
     console.log(lentxt1);
 }
 

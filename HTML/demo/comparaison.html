@@ -157,11 +157,13 @@
             <tr>
                 <th>Nombre de mots du texte 1</th>
                 <th>Cosine simularity des textes</th>
+                <th>Nombre de mots en communs</th>
                 <th>Nombre de mots du texte 2</th>
             </tr>
             <tr>
                 <td id="len1">... mots</td>
                 <td id="cosine">...</td>
+                <td id="nbmotCommun">... mots</td>
                 <td id="len2">... mots</td>
             </tr>
         </table>
@@ -180,6 +182,11 @@
         def cosine_simularity_py(txt1, txt2):
             speeches_vectors = vectorizer.fit_transform([txt1,txt2]) # Create the vectors for the two speeches
             return cosine_similarity(speeches_vectors)[0][1]  
+        
+        def nb_mot_py(txt1, txt2):
+            set1 = set(txt1.split())
+            set2 = set(txt2.split())
+            return len(set1.intersection(set2))
     </py-script>
 
     <!-- End Page Content -->
