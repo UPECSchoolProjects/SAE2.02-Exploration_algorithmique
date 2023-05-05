@@ -176,7 +176,8 @@
     <py-script>
         from sklearn.feature_extraction.text import TfidfVectorizer
         from sklearn.metrics.pairwise import cosine_similarity
-        
+        from js import compareText
+
         vectorizer = TfidfVectorizer()# Initialize the vectorizer
         
         def cosine_simularity_py(txt1, txt2):
@@ -187,12 +188,14 @@
             set1 = set(txt1.split())
             set2 = set(txt2.split())
             return len(set1.intersection(set2))
+	
+        compareText()
     </py-script>
 
     <!-- End Page Content -->
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
     <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
-    <script type="text/javascript" src="./script.js"></script>
+    <script type="text/javascript" src="./script.js" defer></script>
 
     <script>
         // Automatic Slideshow - change image every 4 seconds
