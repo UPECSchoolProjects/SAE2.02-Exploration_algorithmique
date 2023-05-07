@@ -13,14 +13,17 @@ import com.uwu.FileObj;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Classe de conversion de fichier PDF en TXT. Elle implémente l'interface IConverter
+ */
 public class PdfConverter implements IConverter {
 
     private static final Logger logger = LogManager.getLogger(PdfConverter.class);
 
-    private FileObj file;
+    private FileObj file; // fichier à convertir
 
-    private String outputFolder;
-    private String outputURL;
+    private String outputFolder; // répertoire de sortie
+    private String outputURL; // chemin de sortie (répertoire + nom du fichier)
 
     public PdfConverter(FileObj file, String outputfolder) {
         this.file = file;
@@ -29,6 +32,11 @@ public class PdfConverter implements IConverter {
         this.outputURL = this.outputFolder + this.file.getNameWithAnotherExt("txt");
     }
 
+    /**
+     * Converti le fichier PDF en TXT. Utilise la librairie PDFBox
+     * 
+     * @return le fichier TXT
+     */
     @Override
     public File convert() {
         try {

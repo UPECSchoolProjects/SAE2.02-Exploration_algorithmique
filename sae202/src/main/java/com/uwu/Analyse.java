@@ -27,6 +27,15 @@ public class Analyse {
     static Pattern ponctuationRegex = Pattern.compile("[!'.,:;?’><»«)(\"\\[\\]{}<>\\/…\\-']");
     static Pattern pronomSuffixRegex = Pattern.compile("-(?:je|tu|il|elle|nous|vous|ils|elles|moi)\\b");
 
+    /**
+     * Prends une map avec des mots et leur fréquence et retourne le mot le plus
+     * fréquent
+     * La map represente toute les déclinaisons d'une même racine. Cela permet
+     * d'afficher le mot le plus representatif de la racine dans le nuage de mot
+     * 
+     * @param map map avec des mots et leur fréquence
+     * @return
+     */
     public static String getMostFrequentWordInHashMap(Map<String, Integer> map) {
         int max = 0;
         String mot = "";
@@ -43,10 +52,13 @@ public class Analyse {
     private String filePath;
     private String motVidePath;
     private Stemming stemming;
-    private boolean addTxt; // si il faut fichier txt avec le texte nettoyé (sans mots vides, sans ponctuation, etc.)
-    private String addTxtPath; // chemin du fichier txt avec le texte nettoyé 
-    // les variables addTxt et addTxtPath sont soit tous les deux null, soit tous les deux non null grâce à la fonction
-    // setAddTxt qui est la seule à pouvoir les modifier (en dehors de la classe elle-même)
+    private boolean addTxt; // si il faut fichier txt avec le texte nettoyé (sans mots vides, sans
+                            // ponctuation, etc.)
+    private String addTxtPath; // chemin du fichier txt avec le texte nettoyé
+    // les variables addTxt et addTxtPath sont soit tous les deux null, soit tous
+    // les deux non null grâce à la fonction
+    // setAddTxt qui est la seule à pouvoir les modifier (en dehors de la classe
+    // elle-même)
 
     public Analyse(String filePath, List<String> motVide, Stemming stemming) {
         this.filePath = filePath;
@@ -76,6 +88,12 @@ public class Analyse {
     // }
     // }
 
+    /**
+     * prends un fichier texte et retourne une liste de mots
+     * 
+     * @param motVidePath chemin du fichier contenant les mots vides
+     * @return List String liste des mots contenu dans le fichier passé en paramètre
+     */
     public static List<String> lire_mot_vides(String motVidePath) {
         File file = new File(motVidePath);
         List<String> motsVides = new ArrayList<String>();
@@ -105,42 +123,28 @@ public class Analyse {
         return motsVides;
     }
 
-    // public void lire_mot_vides() throws IOException {
-    // try (InputStream is =
-    // getClass().getClassLoader().getResourceAsStream("mot_vide.txt")){
-    // InputStreamReader isr = new InputStreamReader(is);
-    // BufferedReader br = new BufferedReader(isr);
-    // String line;
-    // while ((line = br.readLine()) != null) {
-    // motsVides.add(line);
-    // }
-    // } catch (IOException e) {
-    // logger.error("Erreur lors de la lecture du fichier mot_vide.txt : " +
-    // e.getMessage());
-    // throw e;
-    // }
-    // }
-
-    // InputStream is =
-    // getClass().getClassLoader().getResourceAsStream("mot_vide.txt");
-    // InputStreamReader isr = new InputStreamReader(is);
-    // BufferedReader br = new BufferedReader(isr);
-    // String line;
-    // while ((line = br.readLine()) != null) {
-    // motsVides.add(line);
-    // }
-    // }
-
-    public Map<String, AnalyseMot> calculerFrequences() throws IOException { // Renvoie une Map avec
-                                                                             // les mots et leur
-                                                                             // fréquence
+    /**
+     * Renvoie une Map avec les mots dominants dans chaque racine trouvée et leur
+     * fréquence
+     * 
+     * Appel la méthode addTxt() si on a besoin d'un fichier txt avec le texte
+     * nettoyé (sans mots vides, sans ponctuation, etc.).
+     * Utie pour avoir la cosine similarity pour calculer la similarité entre deux
+     * textes
+     * 
+     * @return Map String, AnalyseMot Map avec les mots dominants dans chaque racine
+     *         trouvée et leur fréquence (voir classe AnalyseMot)
+     * @throws IOException dans le cas où le fichier n'existe pas ou n'est pas
+     *                     lisible
+     */
+    public Map<String, AnalyseMot> calculerFrequences() throws IOException {
         Map<String, Map<String, Integer>> compteurMotDominantDansRacine = new HashMap<String, Map<String, Integer>>();
         int nbMot = 0;
         Map<String, Integer> compteur = new HashMap<>();
 
         StringBuilder listmot = null;
 
-        if(this.addTxt) {
+        if (this.addTxt) {
             listmot = new StringBuilder();
         }
 
@@ -177,7 +181,7 @@ public class Analyse {
                         compteur.put(motRacine, compteur.getOrDefault(motRacine, 0) + 1); // Incrémente la fréquence du
                         // mot
 
-                        if(listmot != null) {
+                        if (listmot != null) {
                             listmot.append(mot).append(" ");
                         }
                     }
@@ -198,7 +202,7 @@ public class Analyse {
             }
         }
 
-        if(this.addTxt) {
+        if (this.addTxt) {
             logger.info("Ecriture du fichier cleaned txt");
             this.writeAddTxt(listmot.toString(), this.addTxtPath);
         }
@@ -206,12 +210,14 @@ public class Analyse {
         return analyseMap;
     }
 
-    //
-    public void ecrireCSV(String nomFichier) throws IOException { // Génère un fichier CSV avec les
-                                                                  // mots et leur
-                                                                  // fréquence
-
-        // if file exist delete it
+    /**
+     * Genre un fichier CSV avec les mots et leur fréquence
+     * 
+     * @param nomFichier chemin du fichier CSV
+     * @throws IOException Erreur lors de l'écriture du fichier
+     */
+    public void ecrireCSV(String nomFichier) throws IOException {
+        // si le fichier existe, on le supprime
         File file = new File(nomFichier);
         if (file.exists()) {
             file.delete();
@@ -241,6 +247,13 @@ public class Analyse {
         }
     }
 
+    /**
+     * Ecrit le fichier txt avec le texte nettoyé à partir d'un string
+     * 
+     * @param text     texte à écrire
+     * @param filePath chemin du fichier
+     * @throws IOException Erreur lors de l'écriture du fichier
+     */
     public void writeAddTxt(String text, String filePath) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(filePath, true), StandardCharsets.UTF_8))) {
@@ -248,6 +261,14 @@ public class Analyse {
         }
     }
 
+    /**
+     * Défini si on veut écrire le fichier txt avec le texte nettoyé
+     * Cette fonctio garanti que les variables addTxt et addTxtPath sont bien
+     * définies en même temps
+     * 
+     * @param addTxt      true si on veut écrire le fichier txt, false sinon
+     * @param TxtfilePath chemin du fichier txt à écrire
+     */
     public void setAddTxt(boolean addTxt, String TxtfilePath) {
         this.addTxt = addTxt;
         this.addTxtPath = TxtfilePath;

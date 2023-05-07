@@ -16,7 +16,10 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
+/**
+ * Classe principale de l'application. Elle contient la méthode main
+ * @author Maxime LOTTO, Maxence BRIAULT et Antoine JARNOUX
+ */
 public class App {
     private static final Logger logger = LogManager.getLogger(App.class);
 

@@ -1,10 +1,13 @@
 package com.uwu;
 
+/**
+ * Classe permettant de stocker les informations sur un mot
+ */
 public class AnalyseMot {
 
-    private double frequence;
-    private int occurence;
-    private String mot;
+    private double frequence; // fréquence du mot dans le texte
+    private int occurence; // nombre d'occurence du mot dans le texte
+    private String mot; // mot analysé (sa racine)
 
     public AnalyseMot(String mot, double frequence, int occurence) {
         this.frequence = frequence;

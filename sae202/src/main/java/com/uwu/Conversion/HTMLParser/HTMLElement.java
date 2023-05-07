@@ -8,17 +8,18 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Cette classe représente une balise HTML. Elle contient les attributs de la
+ * balise, son
+ * contenu, ses enfants, etc.
+ * 
+ * Elle est utilisée par le parser HTML pour créer un arbre DOM.
+ * 
+ * /!\ je crois qu'il y'a déjà une classe HTMLElement dans Java, mais je ne l'ai
+ * pas utilisée
+ */
 public class HTMLElement {
-    /*
-     * Cette classe représente une balise HTML. Elle contient les attributs de la
-     * balise, son
-     * contenu, ses enfants, etc.
-     * 
-     * Elle est utilisée par le parser HTML pour créer un arbre DOM.
-     * 
-     * /!\ je crois qu'il y'a déjà une classe HTMLElement dans Java, mais je ne l'ai
-     * pas utilisée
-     */
+
     private static final Logger logger = LogManager.getLogger(HTMLElement.class);
 
     public static final Pattern AttributesRegex = Pattern.compile("([^=]+=[\"'][^\"|\']*[\"'])");
@@ -29,6 +30,16 @@ public class HTMLElement {
     private String outerHTML; // OuterHTML est <tag>innerHTML</tag>
     public ArrayList<HTMLElement> children; // enfants de la balise
 
+    /**
+     * Constructeur de la classe HTMLElement 
+     * ELle prend en paramètre le nom de la balise, si elle est auto fermante et le contenu de la balise
+     * 
+     * Elle parse les attributs de la balise et les stocke dans un HashMap
+     * 
+     * @param tag Nom de la balise
+     * @param isSelfClosing Si la balise est auto fermante
+     * @param balise Contenu de la balise
+     */
     public HTMLElement(String tag, boolean isSelfClosing, String balise) {
         this.tag = tag;
         this.isSelfClosing = isSelfClosing;
@@ -39,28 +50,40 @@ public class HTMLElement {
 
         this.parseAttributes(); // parse les attributs de la balise avec tout plein de regex
 
-        if(this.tag.equals("div")) {
+        if (this.tag.equals("div")) {
             logger.debug(this.tag);
             for (String key : this.attributes.keySet()) {
                 logger.debug(key + " : " + this.attributes.get(key));
             }
         }
-  
+
     }
 
+    @Override
     public String toString() {
         return outerHTML;
     }
 
+    /**
+     * Ajoute du texte à la fin de la balise
+     * @param text
+     */
     public void addOuterHTML(String text) {
         this.outerHTML += text;
         this.innerHTML = null;
     }
 
+    /**
+     * Ajoute un enfant à la balise
+     * @param child Enfant à ajouter (HTMLElement)
+     */
     public void addChild(HTMLElement child) {
         this.children.add(child);
     }
 
+    /**
+     * Calcule le contenu HTML de la balise (innerHTML) en enlevant les balises
+     */
     public void calculateInnerHTML() {
         if (this.isSelfClosing) {
             return;
@@ -83,6 +106,11 @@ public class HTMLElement {
         this.innerHTML = this.outerHTML.substring(this.outerHTML.indexOf('>') + 1, endTagIndex).trim();
     }
 
+    /**
+     * Retourne le contenu HTML de la balise (innerHTML)
+     * Elle le calcule si il n'est pas déjà calculé (lazy loading)
+     * @return
+     */
     public String getInnerHTML() {
         if (this.innerHTML == null) {
             this.calculateInnerHTML();
@@ -90,16 +118,29 @@ public class HTMLElement {
         return this.innerHTML;
     }
 
+    /**
+     * Retourne le texte contenu dans la balise sans tout l'html imbriqué
+     * @return
+     */
     public String getInnerText() {
         // cette fonction retourne le texte contenu dans la balise sans tout l'html
         // imbriqué
         return this.outerHTML.replaceAll("<[^>]*>", "").trim();
     }
 
+    /**
+     * Retourne le cotenu complet de la balise (outerHTML)
+     * @return
+     */
     public String getOuterHTML() {
         return this.outerHTML;
     }
 
+    /**
+     * Ajoute les attributs de la balise dans un HashMap
+     * @param key Nom de l'attribut
+     * @return
+     */
     public void parseAttributes() {
         // cette fonction parse les attributs de la balise avec des regex
 

@@ -8,17 +8,17 @@ import java.util.regex.Pattern;
 
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
-
+/**
+ * Cette classe implémente l'algorithme de racinisation donnée dans le cahier
+ * des
+ * charges.
+ * 
+ * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+ * SAE2.02
+ */
 public class Stemming {
-    /*
-     * Cette classe implémente l'algorithme de racinisation donnée dans le cahier
-     * des
-     * charges.
-     * 
-     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
-     * SAE2.02
-     */
-    //private static final Logger logger = LogManager.getLogger(Stemming.class);
+
+    // private static final Logger logger = LogManager.getLogger(Stemming.class);
 
     /**
      * Liste des voyelles utilisées dans l'algorithme de racinisation pour le

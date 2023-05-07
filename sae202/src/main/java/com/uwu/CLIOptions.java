@@ -2,6 +2,11 @@ package com.uwu;
 
 import org.apache.commons.cli.Option;
 
+/**
+ * Cette enum contient les options pour l'interface en ligne de commande. Cette structure permet de centraliser les options et de les utiliser facilement.
+ * 
+ * Dans l'initialisation du CLI, il prend toues les options dans ce fichier et les ajoute au CLI (après les avoir converties en Option avec la fonction toOption())
+ */
 public enum CLIOptions {
     HELP("h", "help", NbArgs.NONE, "Affiche l'aide", false),
     INPUTFILES("f", "filename", NbArgs.MULTIPLE, "Liste de fichiers séparé par des virgules à traiter (incompatible avec -d)", false),
@@ -19,18 +24,29 @@ public enum CLIOptions {
     VERBOSE("v", "verbose", NbArgs.NONE, "Affiche les logs de debug", false),
     EXTRA_VERBOSE("vv", "extraVerbose", NbArgs.NONE, "Affiche les logs de trace", false);
 
+    /**
+     * Nombre d'arguments que prend l'option
+     */
     enum NbArgs {
         NONE,
         ONE,
         MULTIPLE
     }
     
-    private String shortOpt;
-    private String longOpt;
-    private NbArgs nbArgs;
-    private String description;
-    private boolean isRequired;
+    private String shortOpt; // nom court de l'option
+    private String longOpt; // nom long de l'option
+    private NbArgs nbArgs; // nombre d'arguments que prend l'option
+    private String description; // description de l'option (pour l'aide)
+    private boolean isRequired; // si l'option est obligatoire
 
+    /**
+     * Constructeur de l'enum
+     * @param shortOpt 
+     * @param longOpt
+     * @param nbArgs
+     * @param description
+     * @param isRequired
+     */
     private CLIOptions(String shortOpt, String longOpt, NbArgs nbArgs, String description, boolean isRequired) {
         this.shortOpt = shortOpt;
         this.longOpt = longOpt;
