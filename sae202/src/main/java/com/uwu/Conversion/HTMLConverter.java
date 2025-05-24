@@ -27,7 +27,7 @@ import com.uwu.Conversion.HTMLParser.HTMLElement;
  * Analyse le fichier HTML ligne par ligne et construit un arbre DOM à partir
  * d'un stack
  * 
- * @author Maxime LOTTO
+ * @author Mélodie LOTTO
  */
 public class HTMLConverter implements IConverter {
     private static final Logger logger = LogManager.getLogger(HTMLConverter.class);
@@ -206,7 +206,7 @@ public class HTMLConverter implements IConverter {
      * un défi
      * personnel et de faire un parser HTML basique en Java, c'était assez amusant à
      * faire
-     * (Maxime LOTTO)
+     * (Mélodie LOTTO)
      * 
      * @return une liste d'HTMLElement
      */

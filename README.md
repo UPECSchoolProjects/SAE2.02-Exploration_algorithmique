@@ -36,6 +36,6 @@ Pour l'exécution du serveur node.js : `node index.js` dans le dossier `Serveur`
 ## 4. Dossiers
 - le dossier `HTML` contient tout le code du site internet (https://sae202.nwo.ovh/)
 - le dossier `javadocs` contient la documentation de l'application.
-- le dossier `sae202` contient le code source du convertisseurs, de l'analyse et de l'algorithme de racinisation écrit par Maxime Lotto. Il contient aussi un dossier `test` avec tout les tests unitaire de l'application.
+- le dossier `sae202` contient le code source du convertisseurs, de l'analyse et de l'algorithme de racinisation écrit par Mélodie Lotto. Il contient aussi un dossier `test` avec tout les tests unitaire de l'application.
 - Le dossier `Serveur` contient un serveur node.js avec la bibliothèque `express` qui permet de faire le lien entre les textes analysés et le site.
 

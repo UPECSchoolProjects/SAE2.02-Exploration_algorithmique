@@ -5,7 +5,7 @@ package com.uwu.Stemming;
  * dans le cahier des
  * charges.
  * 
- * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+ * Elle a été écrite par Mélodie LOTTO dans le cadre du travail personnel de la
  * SAE2.02
  */
 

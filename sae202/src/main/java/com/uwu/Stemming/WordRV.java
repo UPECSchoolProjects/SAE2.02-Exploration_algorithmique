@@ -8,7 +8,7 @@ import java.util.List;
  * Represente un mot et ses regions R1, R2 et RV
  * très utile pour le reste de l'implementation
  * 
- * @author Maxime LOTTO
+ * @author Mélodie LOTTO
  */
 public class WordRV {
     /*
@@ -16,7 +16,7 @@ public class WordRV {
      * dans le cahier des
      * charges.
      * 
-     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+     * Elle a été écrite par Mélodie LOTTO dans le cadre du travail personnel de la
      * SAE2.02
      */
     /**

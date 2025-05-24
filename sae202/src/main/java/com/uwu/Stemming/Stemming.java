@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * des
  * charges.
  * 
- * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+ * Elle a été écrite par Mélodie LOTTO dans le cadre du travail personnel de la
  * SAE2.02
  */
 public class Stemming {

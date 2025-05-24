@@ -14,7 +14,7 @@ import com.uwu.Stemming.WordRV.Region;
  * à chaque étape (si j'ai pas oublié) j'ai mis un commentaire avec la phrase du
  * cahier des charges
  * 
- * @author Maxime LOTTO
+ * @author Mélodie LOTTO
  */
 public class StemSteps {
     /*
@@ -22,7 +22,7 @@ public class StemSteps {
      * dans le cahier des
      * charges.
      * 
-     * Elle a été écrite par Maxime LOTTO dans le cadre du travail personnel de la
+     * Elle a été écrite par Mélodie LOTTO dans le cadre du travail personnel de la
      * SAE2.02
      */
 
